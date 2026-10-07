@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lyric Scroll">
+<meta name="theme-color" content="#111111">
+<title>Lyric Scroll</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#111;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:700px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 18px 30px}
+h1{font-size:30px;margin:0 0 14px}textarea{width:100%;min-height:260px;border:1px solid #444;border-radius:14px;background:#1c1c1e;color:#fff;padding:16px;font-size:18px;line-height:1.5;resize:vertical}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+button{border:0;border-radius:12px;padding:13px 10px;font-size:16px;font-weight:600;background:#2c2c2e;color:#fff}
+button.primary{background:#fff;color:#111}.row{display:flex;gap:12px;align-items:center;margin:12px 0}.row label{min-width:74px}.row input{flex:1}
+#stage{display:none;margin-top:14px;background:#171717;border-radius:14px;padding:18px;max-height:55vh;overflow:hidden}
+#lyrics{font-size:28px;line-height:1.6;white-space:pre-wrap;text-align:center}
+.small{color:#aaa;font-size:13px;text-align:center;margin-top:12px}
+</style>
+</head>
+<body>
+<main>
+<h1>🎵 Lyric Scroll</h1>
+<textarea id="input" placeholder="Paste your lyrics here…"></textarea>
+<div class="row"><label>Speed</label><input id="speed" type="range" min="1" max="10" value="5"><span id="sv">5</span></div>
+<div class="row"><label>Text</label><input id="size" type="range" min="18" max="48" value="28"><span id="zv">28</span></div>
+<div class="controls">
+<button class="primary" id="start">Start</button><button id="pause">Pause</button>
+<button id="reset">Reset</button><button id="clear">Clear</button>
+</div>
+<div id="stage"><div id="lyrics"></div></div>
+<div class="small">Lyrics are saved on this device.</div>
+</main>
+<script>
+const input=document.getElementById('input'), lyrics=document.getElementById('lyrics'), stage=document.getElementById('stage');
+const speed=document.getElementById('speed'), size=document.getElementById('size');
+let timer=null, pos=0;
+input.value=localStorage.getItem('lyricScrollLyrics')||'';
+function save(){localStorage.setItem('lyricScrollLyrics',input.value)}
+input.addEventListener('input',save);
+speed.oninput=()=>document.getElementById('sv').textContent=speed.value;
+size.oninput=()=>{document.getElementById('zv').textContent=size.value;lyrics.style.fontSize=size.value+'px'};
+function render(){lyrics.textContent=input.value;stage.style.display='block';lyrics.style.transform=`translateY(${-pos}px)`}
+function stop(){if(timer){clearInterval(timer);timer=null}}
+document.getElementById('start').onclick=()=>{render();stop();timer=setInterval(()=>{pos+=Number(speed.value)*.35;lyrics.style.transform=`translateY(${-pos}px)`},30)}
+document.getElementById('pause').onclick=stop;
+document.getElementById('reset').onclick=()=>{stop();pos=0;render()}
+document.getElementById('clear').onclick=()=>{stop();input.value='';localStorage.removeItem('lyricScrollLyrics');pos=0;stage.style.display='none'}
+render();
+</script>
+</body></html>
