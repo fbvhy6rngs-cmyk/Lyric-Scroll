@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
 
-  <!-- Prevent browser zoom; font size is controlled by A− / A+ -->
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
@@ -25,6 +24,7 @@
       font-family: Arial, sans-serif;
       background: #ffffff;
       color: #111111;
+      overflow-x: hidden;
     }
 
     header {
@@ -140,11 +140,34 @@
       width: 140px;
     }
 
+    /*
+      Reader viewport.
+
+      The lyrics themselves are moved with
+      transform instead of window scrolling.
+    */
+
+    #readerViewport {
+      position: relative;
+      overflow: hidden;
+      min-height: calc(100vh - 220px);
+    }
+
     #lyricsDisplay {
       white-space: pre-wrap;
       line-height: 1.6;
       font-size: 24px;
       padding-bottom: 80vh;
+
+      will-change: transform;
+
+      transform: translate3d(0, 0, 0);
+
+      /*
+        Prevent the browser from trying to
+        interpret touches as gestures on lyrics.
+      */
+      touch-action: pan-y;
     }
 
     .hidden {
@@ -350,7 +373,16 @@
       </div>
 
 
-      <div id="lyricsDisplay"></div>
+      <!--
+        Lyrics viewport.
+        The lyrics move inside this area.
+      -->
+
+      <div id="readerViewport">
+
+        <div id="lyricsDisplay"></div>
+
+      </div>
 
     </section>
 
@@ -385,6 +417,13 @@
     let scrollAnimation = null;
 
     let lastTime = null;
+
+    /*
+      Current vertical position of
+      the lyrics inside the viewport.
+    */
+
+    let lyricPosition = 0;
 
 
     /*
@@ -460,6 +499,9 @@
 
     const lyricsDisplay =
       document.getElementById("lyricsDisplay");
+
+    const readerViewport =
+      document.getElementById("readerViewport");
 
     const scrollButton =
       document.getElementById("scrollButton");
@@ -839,10 +881,17 @@
 
 
       /*
-        Load saved speed.
+        Start the lyrics at the top.
+      */
 
-        Older songs without a saved
-        speed use Speed 5.
+      lyricPosition = 0;
+
+      lyricsDisplay.style.transform =
+        "translate3d(0, 0, 0)";
+
+
+      /*
+        Load saved speed.
       */
 
       const savedLevel =
@@ -919,6 +968,10 @@
         level;
 
 
+      /*
+        Save speed to current song.
+      */
+
       if (
         save &&
         currentSong
@@ -971,7 +1024,7 @@
 
 
     /* =============================
-       SMOOTH SCROLLING
+       TELEPROMPTER SCROLL
     ============================= */
 
     function scrollLyrics(
@@ -1004,24 +1057,41 @@
 
 
       /*
-        Calculate the exact amount
-        to move, including fractions
-        of a pixel.
+        Move using fractional pixels.
 
-        DO NOT round this value.
-        This is what makes the slower
-        speeds glide instead of jump.
+        This is deliberately NOT rounded.
       */
 
-      const movement =
+      lyricPosition -=
         scrollSpeed *
         (elapsed / 1000);
 
 
-      window.scrollBy(
-        0,
-        movement
-      );
+      lyricsDisplay.style.transform =
+        `translate3d(0, ${lyricPosition}px, 0)`;
+
+
+      /*
+        Stop automatically once the
+        lyrics have completely passed
+        through the viewport.
+      */
+
+      const lyricsBottom =
+        lyricsDisplay.offsetTop +
+        lyricsDisplay.offsetHeight +
+        lyricPosition;
+
+
+      if (
+        lyricsBottom <
+        0
+      ) {
+
+        stopScrolling();
+
+        return;
+      }
 
 
       scrollAnimation =
@@ -1094,6 +1164,13 @@
     function resetScroll() {
 
       stopScrolling();
+
+
+      lyricPosition = 0;
+
+
+      lyricsDisplay.style.transform =
+        "translate3d(0, 0, 0)";
 
 
       window.scrollTo(
