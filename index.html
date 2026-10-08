@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
 
+  <!-- Prevent browser zoom; font size is controlled by A− / A+ -->
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
@@ -385,13 +386,6 @@
 
     let lastTime = null;
 
-    /*
-      This keeps fractional pixels
-      from being lost at slow speeds.
-    */
-
-    let scrollRemainder = 0;
-
 
     /*
       SPEED SCALE
@@ -573,17 +567,11 @@
           deleteSong(song.id);
 
 
-        actions.appendChild(
-          openButton
-        );
+        actions.appendChild(openButton);
 
-        actions.appendChild(
-          editButton
-        );
+        actions.appendChild(editButton);
 
-        actions.appendChild(
-          deleteButton
-        );
+        actions.appendChild(deleteButton);
 
 
         item.appendChild(title);
@@ -719,11 +707,6 @@
           song.lyrics =
             lyrics;
 
-          /*
-            Speed is intentionally
-            NOT changed here.
-          */
-
         }
 
       } else {
@@ -858,8 +841,8 @@
       /*
         Load saved speed.
 
-        Older songs that don't have
-        speedLevel use Speed 5.
+        Older songs without a saved
+        speed use Speed 5.
       */
 
       const savedLevel =
@@ -936,10 +919,6 @@
         level;
 
 
-      /*
-        Save speed to current song.
-      */
-
       if (
         save &&
         currentSong
@@ -979,8 +958,6 @@
 
       lastTime = null;
 
-      scrollRemainder = 0;
-
 
       scrollAnimation =
         requestAnimationFrame(
@@ -994,7 +971,7 @@
 
 
     /* =============================
-       SCROLL ANIMATION
+       SMOOTH SCROLLING
     ============================= */
 
     function scrollLyrics(
@@ -1027,8 +1004,13 @@
 
 
       /*
-        Calculate exact movement,
-        including fractional pixels.
+        Calculate the exact amount
+        to move, including fractions
+        of a pixel.
+
+        DO NOT round this value.
+        This is what makes the slower
+        speeds glide instead of jump.
       */
 
       const movement =
@@ -1036,33 +1018,10 @@
         (elapsed / 1000);
 
 
-      /*
-        Save fractional movement
-        instead of throwing it away.
-      */
-
-      scrollRemainder +=
-        movement;
-
-
-      const pixelsToMove =
-        Math.floor(
-          scrollRemainder
-        );
-
-
-      if (pixelsToMove > 0) {
-
-        window.scrollBy(
-          0,
-          pixelsToMove
-        );
-
-
-        scrollRemainder -=
-          pixelsToMove;
-
-      }
+      window.scrollBy(
+        0,
+        movement
+      );
 
 
       scrollAnimation =
@@ -1085,10 +1044,6 @@
 
       lastTime =
         null;
-
-
-      scrollRemainder =
-        0;
 
 
       if (
