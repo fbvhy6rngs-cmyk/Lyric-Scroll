@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lyric Scroll</title>
+<title>Lyric Scroller</title>
 
 <style>
   * {
@@ -157,7 +157,7 @@
   }
 
   #speedValue {
-    min-width: 45px;
+    min-width: 30px;
     text-align: center;
     font-weight: bold;
   }
@@ -212,6 +212,7 @@
   }
 
   @media (max-width: 600px) {
+
     .app-title {
       width: 100%;
       margin-bottom: 4px;
@@ -255,15 +256,26 @@
 
 <header>
   <div class="header-inner">
-    <div class="app-title">🎵 Lyric Scroll</div>
 
-    <button id="addSongButton">＋ Add Song</button>
+    <div class="app-title">
+      🎵 Lyric Scroll
+    </div>
 
-    <button id="topScrollButton">▶ Start</button>
+    <button id="addSongButton">
+      ＋ Add Song
+    </button>
 
-    <button id="darkModeButton">🌙 Dark</button>
+    <button id="topScrollButton">
+      ▶ Start
+    </button>
+
+    <button id="darkModeButton">
+      🌙 Dark
+    </button>
+
   </div>
 </header>
+
 
 <main>
 
@@ -286,9 +298,13 @@
 
   <section id="editorScreen" class="hidden">
 
-    <h2 id="editorHeading">Add Song</h2>
+    <h2 id="editorHeading">
+      Add Song
+    </h2>
 
-    <label for="songTitle">Song Title</label>
+    <label for="songTitle">
+      Song Title
+    </label>
 
     <input
       type="text"
@@ -296,7 +312,9 @@
       placeholder="Enter song title"
     >
 
-    <label for="songLyrics">Lyrics</label>
+    <label for="songLyrics">
+      Lyrics
+    </label>
 
     <textarea
       id="songLyrics"
@@ -369,13 +387,15 @@
         <input
           type="range"
           id="speedSlider"
-          min="0"
+          min="1"
           max="10"
           step="1"
           value="5"
         >
 
-        <span id="speedValue">5</span>
+        <span id="speedValue">
+          5
+        </span>
 
       </div>
 
@@ -391,9 +411,9 @@
 
 <script>
 
-  /* --------------------------------
+  /* ================================
      APP DATA
-  -------------------------------- */
+  ================================= */
 
   let songs = JSON.parse(
     localStorage.getItem("lyricScrollSongs") || "[]"
@@ -414,22 +434,25 @@
   let lastTime = null;
 
 
-  /* --------------------------------
+  /* ================================
      SPEED SETTINGS
-  -------------------------------- */
+
+     10 = fastest
+     1 = slowest
+
+     Speed 1 is deliberately slow,
+     but fast enough to visibly move.
+  ================================= */
 
   const speeds = {
 
-    0: 0,
+    1: 12,
 
-    // Slower than before
-    1: 7,
+    2: 18,
 
-    2: 13,
+    3: 25,
 
-    3: 21,
-
-    4: 31,
+    4: 33,
 
     5: 42,
 
@@ -446,9 +469,9 @@
   };
 
 
-  /* --------------------------------
+  /* ================================
      ELEMENTS
-  -------------------------------- */
+  ================================= */
 
   const songListScreen =
     document.getElementById("songListScreen");
@@ -490,9 +513,9 @@
     document.getElementById("topScrollButton");
 
 
-  /* --------------------------------
+  /* ================================
      SAVE SONGS
-  -------------------------------- */
+  ================================= */
 
   function saveSongs() {
 
@@ -504,9 +527,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      SHOW SCREEN
-  -------------------------------- */
+  ================================= */
 
   function showScreen(screen) {
 
@@ -523,9 +546,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      SONG LIST
-  -------------------------------- */
+  ================================= */
 
   function renderSongList() {
 
@@ -602,9 +625,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      ADD SONG
-  -------------------------------- */
+  ================================= */
 
   function addSong() {
 
@@ -626,9 +649,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      EDIT SONG
-  -------------------------------- */
+  ================================= */
 
   function editSong(id) {
 
@@ -655,9 +678,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      SAVE SONG
-  -------------------------------- */
+  ================================= */
 
   function saveSong() {
 
@@ -699,6 +722,11 @@
 
         song.lyrics = lyrics;
 
+        /*
+          Do NOT change speedLevel.
+          The song keeps its saved speed.
+        */
+
       }
 
     } else {
@@ -711,7 +739,11 @@
 
         lyrics: lyrics,
 
-        // New songs start at speed 5
+        /*
+          Every new song starts at
+          a normal middle speed.
+        */
+
         speedLevel: 5
 
       });
@@ -728,9 +760,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      DELETE SONG
-  -------------------------------- */
+  ================================= */
 
   function deleteSong(id) {
 
@@ -760,9 +792,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      OPEN SONG
-  -------------------------------- */
+  ================================= */
 
   function openSong(id) {
 
@@ -785,10 +817,10 @@
 
 
     /*
-      Load this song's saved speed.
+      Load the speed saved for THIS song.
 
-      Old songs that don't have a
-      speedLevel will use speed 5.
+      Older songs that don't have a
+      saved speed automatically get 5.
     */
 
     const savedLevel =
@@ -813,14 +845,27 @@
   }
 
 
-  /* --------------------------------
-     SPEED
-  -------------------------------- */
+  /* ================================
+     UPDATE SPEED
+  ================================= */
 
   function updateSpeed(save = true) {
 
-    const level =
+    let level =
       Number(speedSlider.value);
+
+
+    /*
+      Make absolutely sure the value
+      stays between 1 and 10.
+    */
+
+    if (level < 1) level = 1;
+
+    if (level > 10) level = 10;
+
+
+    speedSlider.value = level;
 
 
     scrollSpeed =
@@ -828,14 +873,12 @@
 
 
     speedValue.textContent =
-      level === 0
-        ? "STOP"
-        : level;
+      level;
 
 
     /*
-      Save the speed specifically
-      to the current song.
+      Save this speed to the
+      current song.
     */
 
     if (
@@ -850,23 +893,12 @@
 
     }
 
-
-    /*
-      Speed 0 means stop.
-    */
-
-    if (level === 0) {
-
-      stopScrolling();
-
-    }
-
   }
 
 
-  /* --------------------------------
-     START / PAUSE SCROLLING
-  -------------------------------- */
+  /* ================================
+     START / PAUSE
+  ================================= */
 
   function toggleScrolling() {
 
@@ -880,11 +912,16 @@
 
 
     /*
-      If speed is STOP,
-      start at speed 5.
+      Make sure we always have
+      a valid speed.
     */
 
-    if (scrollSpeed === 0) {
+    if (
+      scrollSpeed <= 0 ||
+      !speeds[
+        Number(speedSlider.value)
+      ]
+    ) {
 
       speedSlider.value = 5;
 
@@ -909,9 +946,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      SCROLL ENGINE
-  -------------------------------- */
+  ================================= */
 
   function scrollLyrics(timestamp) {
 
@@ -962,9 +999,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      STOP SCROLLING
-  -------------------------------- */
+  ================================= */
 
   function stopScrolling() {
 
@@ -992,9 +1029,9 @@
   }
 
 
-  /* --------------------------------
-     UPDATE START BUTTON
-  -------------------------------- */
+  /* ================================
+     START BUTTON TEXT
+  ================================= */
 
   function updateScrollButton() {
 
@@ -1009,9 +1046,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      RESET
-  -------------------------------- */
+  ================================= */
 
   function resetScroll() {
 
@@ -1025,9 +1062,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      FONT SIZE
-  -------------------------------- */
+  ================================= */
 
   function changeFontSize(amount) {
 
@@ -1054,9 +1091,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      DARK MODE
-  -------------------------------- */
+  ================================= */
 
   function toggleDarkMode() {
 
@@ -1089,9 +1126,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      LOAD DARK MODE
-  -------------------------------- */
+  ================================= */
 
   function loadDarkMode() {
 
@@ -1120,9 +1157,9 @@
   }
 
 
-  /* --------------------------------
+  /* ================================
      BUTTON EVENTS
-  -------------------------------- */
+  ================================= */
 
   document
     .getElementById("addSongButton")
@@ -1209,8 +1246,8 @@
 
 
   /*
-    Changing the speed only changes
-    the speed. It does NOT start scrolling.
+    Changing speed does NOT start
+    scrolling. It only changes speed.
   */
 
   speedSlider.addEventListener(
@@ -1219,9 +1256,9 @@
   );
 
 
-  /* --------------------------------
+  /* ================================
      INITIALIZE
-  -------------------------------- */
+  ================================= */
 
   loadDarkMode();
 
