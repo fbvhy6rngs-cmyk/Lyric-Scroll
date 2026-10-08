@@ -16,12 +16,22 @@
 
 <style>
 
+/* =====================================================
+   BASIC PAGE
+   ===================================================== */
+
 * {
   box-sizing: border-box;
 }
 
 
+html {
+  scroll-behavior: auto;
+}
+
+
 body {
+
   margin: 0;
 
   font-family:
@@ -33,38 +43,84 @@ body {
   background: #f5f5f5;
 
   color: #111;
+
 }
 
 
 body.dark {
+
   background: #111;
+
   color: #eee;
+
 }
 
 
+
+/* =====================================================
+   FIXED TOP BAR
+   ===================================================== */
+
 header {
 
-  position: sticky;
+  position: fixed;
 
   top: 0;
 
-  z-index: 100;
+  left: 0;
 
-  background: inherit;
+  right: 0;
 
-  padding: 15px;
+  z-index: 1000;
+
+  background: #f5f5f5;
+
+  padding: 12px 15px;
 
   border-bottom: 1px solid #ccc;
+
+}
+
+
+body.dark header {
+
+  background: #111;
+
+  border-bottom-color: #333;
+
 }
 
 
 h1 {
 
-  margin: 0 0 12px;
+  margin: 0 0 10px;
 
-  font-size: 24px;
+  font-size: 22px;
+
 }
 
+
+/*
+   The buttons in the top bar.
+*/
+
+header .controls {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 7px;
+
+  margin: 0;
+
+}
+
+
+
+/* =====================================================
+   BUTTONS
+   ===================================================== */
 
 button {
 
@@ -72,11 +128,15 @@ button {
 
   border-radius: 10px;
 
-  padding: 10px 14px;
+  padding: 10px 13px;
 
   font-size: 16px;
 
   cursor: pointer;
+
+  -webkit-tap-highlight-color:
+    transparent;
+
 }
 
 
@@ -85,6 +145,7 @@ button {
   background: #007aff;
 
   color: white;
+
 }
 
 
@@ -93,6 +154,7 @@ button {
   background: #ddd;
 
   color: #111;
+
 }
 
 
@@ -101,6 +163,7 @@ body.dark .secondary {
   background: #333;
 
   color: white;
+
 }
 
 
@@ -109,30 +172,37 @@ body.dark .secondary {
   background: #ff3b30;
 
   color: white;
+
 }
 
 
-.controls {
 
-  display: flex;
-
-  flex-wrap: wrap;
-
-  gap: 8px;
-
-  margin-top: 10px;
-}
-
+/* =====================================================
+   MAIN CONTENT
+   ===================================================== */
 
 main {
 
   padding: 15px;
 
+  /*
+     Leave room for the fixed
+     header at the top.
+  */
+
+  padding-top: 120px;
+
   max-width: 900px;
 
   margin: auto;
+
 }
 
+
+
+/* =====================================================
+   SONG LIST
+   ===================================================== */
 
 .song-list {
 
@@ -141,6 +211,7 @@ main {
   flex-direction: column;
 
   gap: 8px;
+
 }
 
 
@@ -161,6 +232,7 @@ main {
   background: white;
 
   border: 1px solid #ddd;
+
 }
 
 
@@ -169,6 +241,7 @@ body.dark .song-item {
   background: #1d1d1d;
 
   border-color: #333;
+
 }
 
 
@@ -181,6 +254,7 @@ body.dark .song-item {
   font-weight: 600;
 
   cursor: pointer;
+
 }
 
 
@@ -189,18 +263,26 @@ body.dark .song-item {
   display: flex;
 
   gap: 6px;
+
 }
 
+
+
+/* =====================================================
+   EDITOR
+   ===================================================== */
 
 .editor {
 
   display: none;
+
 }
 
 
 .editor.active {
 
   display: block;
+
 }
 
 
@@ -220,6 +302,7 @@ textarea {
   background: white;
 
   color: #111;
+
 }
 
 
@@ -231,6 +314,7 @@ body.dark textarea {
   color: white;
 
   border-color: #444;
+
 }
 
 
@@ -241,12 +325,14 @@ textarea {
   resize: vertical;
 
   line-height: 1.5;
+
 }
 
 
 .field {
 
   margin-bottom: 12px;
+
 }
 
 
@@ -257,18 +343,37 @@ textarea {
   margin-bottom: 5px;
 
   font-weight: 600;
+
 }
 
+
+
+/* =====================================================
+   READER
+   ===================================================== */
 
 .reader {
 
   display: none;
+
 }
 
 
 .reader.active {
 
   display: block;
+
+}
+
+
+.reader-title {
+
+  font-size: 26px;
+
+  font-weight: 700;
+
+  margin-bottom: 10px;
+
 }
 
 
@@ -281,25 +386,62 @@ textarea {
   font-size: 26px;
 
   padding:
+
     25px
+
     10px
-    600px;
+
+    700px;
+
 }
 
 
-.reader-title {
 
-  font-size: 26px;
+/* =====================================================
+   READER CONTROLS
+   ===================================================== */
 
-  font-weight: 700;
+.reader-controls {
 
-  margin-bottom: 10px;
+  position: sticky;
+
+  top: 0;
+
+  z-index: 100;
+
+  background: inherit;
+
+  padding: 8px 0;
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 7px;
+
 }
 
+
+.font-size {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+}
+
+
+
+/* =====================================================
+   SPEED CONTROL
+   ===================================================== */
 
 .speed-control {
 
   padding: 12px 0;
+
 }
 
 
@@ -312,6 +454,7 @@ textarea {
   align-items: center;
 
   margin-bottom: 6px;
+
 }
 
 
@@ -320,6 +463,7 @@ textarea {
   font-size: 18px;
 
   font-weight: 700;
+
 }
 
 
@@ -330,6 +474,7 @@ textarea {
   height: 32px;
 
   touch-action: none;
+
 }
 
 
@@ -342,43 +487,14 @@ textarea {
   font-size: 11px;
 
   opacity: .65;
+
 }
 
 
-/*
-   These are the controls that
-   stay with the top of the reader.
-*/
 
-.reader-controls {
-
-  position: sticky;
-
-  top: 0;
-
-  z-index: 90;
-
-  background: inherit;
-
-  padding: 8px 0;
-
-  display: flex;
-
-  flex-wrap: wrap;
-
-  gap: 7px;
-}
-
-
-.font-size {
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 7px;
-}
-
+/* =====================================================
+   EMPTY SONG LIST
+   ===================================================== */
 
 .empty {
 
@@ -387,6 +503,7 @@ textarea {
   text-align: center;
 
   padding: 40px 10px;
+
 }
 
 </style>
@@ -397,9 +514,17 @@ textarea {
 <body>
 
 
+
+<!-- =====================================================
+     FIXED HEADER
+     ===================================================== -->
+
 <header>
 
-<h1>🎵 Lyric Scroll</h1>
+
+<h1>
+🎵 Lyric Scroll
+</h1>
 
 
 <div class="controls">
@@ -444,7 +569,13 @@ Dark Mode
 </header>
 
 
+
+<!-- =====================================================
+     MAIN
+     ===================================================== -->
+
 <main>
+
 
 
 <!-- =====================================================
@@ -453,7 +584,10 @@ Dark Mode
 
 <section id="songListView">
 
-<h2>My Songs</h2>
+
+<h2>
+My Songs
+</h2>
 
 
 <div
@@ -467,7 +601,7 @@ Dark Mode
 
 
 <!-- =====================================================
-     EDITOR
+     SONG EDITOR
      ===================================================== -->
 
 <section
@@ -475,7 +609,8 @@ Dark Mode
   class="editor">
 
 
-<h2 id="editorHeading">
+<h2
+  id="editorHeading">
 
 Add Song
 
@@ -556,8 +691,6 @@ Cancel
   class="reader">
 
 
-<!-- READER CONTROLS -->
-
 <div class="reader-controls">
 
 
@@ -607,7 +740,7 @@ A+
 
 
 
-<!-- SPEED CONTROL -->
+<!-- SPEED -->
 
 <div class="speed-control">
 
@@ -616,16 +749,12 @@ A+
 
 
 <span>
-
 Scroll Speed
-
 </span>
 
 
 <strong id="speedValue">
-
 5
-
 </strong>
 
 
@@ -645,16 +774,12 @@ Scroll Speed
 
 
 <span>
-
 STOP
-
 </span>
 
 
 <span>
-
 FAST
-
 </span>
 
 
@@ -811,11 +936,6 @@ function displaySongs() {
 
 function showEditor() {
 
-
-  /*
-     Make sure scrolling is stopped
-     if the user was previously reading.
-  */
 
   stopScrolling();
 
@@ -1108,10 +1228,6 @@ function openSong(id) {
   if (!song) return;
 
 
-  /*
-     Always begin a song stopped.
-  */
-
   stopScrolling();
 
 
@@ -1191,7 +1307,6 @@ function closeReader() {
 
 const speeds = {
 
-
   0: 0,
 
   1: 12,
@@ -1232,11 +1347,6 @@ const speedValue =
 let scrollSpeed = 42;
 
 
-/*
-   This is the actual
-   playing/stopped switch.
-*/
-
 let isScrolling = false;
 
 
@@ -1271,11 +1381,8 @@ function updateSpeed() {
 
 
   /*
-     Moving the slider NEVER
-     starts scrolling.
-
-     If the user moves it to
-     STOP, we stop scrolling.
+     Changing the slider
+     NEVER starts scrolling.
   */
 
   if (level === 0) {
@@ -1289,7 +1396,7 @@ function updateSpeed() {
 
 
 /* =====================================================
-   SLIDER LISTENER
+   SLIDER
    ===================================================== */
 
 speedSlider.addEventListener(
@@ -1373,8 +1480,8 @@ function toggleScrolling() {
 
 
   /*
-     If currently playing,
-     pressing the button pauses.
+     If currently scrolling,
+     pause it.
   */
 
   if (isScrolling) {
@@ -1389,10 +1496,9 @@ function toggleScrolling() {
 
 
   /*
-     If speed is STOP,
-     choose normal speed when
-     the user explicitly presses
-     Start.
+     If speed is STOP and the
+     user deliberately presses
+     Start, use normal speed.
   */
 
   if (scrollSpeed === 0) {
@@ -1422,7 +1528,7 @@ function toggleScrolling() {
     );
 
 
-  updateScrollButtons();
+  updateScrollButton();
 
 }
 
@@ -1456,32 +1562,32 @@ function stopScrolling() {
   lastTime = null;
 
 
-  updateScrollButtons();
+  updateScrollButton();
 
 }
 
 
 
 /* =====================================================
-   UPDATE BOTH START BUTTONS
+   UPDATE TOP BUTTON
    ===================================================== */
 
-function updateScrollButtons() {
+function updateScrollButton() {
 
 
-  const topButton =
+  const button =
     document.getElementById(
       "topScrollButton"
     );
 
 
-  if (!topButton) return;
+  if (!button) return;
 
 
   if (isScrolling) {
 
 
-    topButton.textContent =
+    button.textContent =
       "⏸ Pause";
 
 
@@ -1490,7 +1596,7 @@ function updateScrollButtons() {
   else {
 
 
-    topButton.textContent =
+    button.textContent =
       "▶ Start";
 
   }
@@ -1636,21 +1742,13 @@ function escapeHTML(text) {
 displaySongs();
 
 
-/*
-   Set initial speed display.
-*/
-
 updateSpeed();
 
-
-/*
-   Make absolutely sure
-   the app starts stopped.
-*/
 
 stopScrolling();
 
 </script>
+
 
 </body>
 
