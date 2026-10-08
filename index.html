@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 
 <meta name="viewport"
@@ -11,14 +13,17 @@
 
 <title>Lyric Scroll</title>
 
+
 <style>
 
 * {
   box-sizing: border-box;
 }
 
+
 body {
   margin: 0;
+
   font-family:
     -apple-system,
     BlinkMacSystemFont,
@@ -26,34 +31,45 @@ body {
     sans-serif;
 
   background: #f5f5f5;
+
   color: #111;
 }
+
 
 body.dark {
   background: #111;
   color: #eee;
 }
 
+
 header {
+
   position: sticky;
+
   top: 0;
+
   z-index: 100;
 
   background: inherit;
 
   padding: 15px;
 
-  border-bottom:
-    1px solid #ccc;
+  border-bottom: 1px solid #ccc;
 }
 
+
 h1 {
+
   margin: 0 0 12px;
+
   font-size: 24px;
 }
 
+
 button {
+
   border: none;
+
   border-radius: 10px;
 
   padding: 10px 14px;
@@ -63,48 +79,77 @@ button {
   cursor: pointer;
 }
 
+
 .primary {
+
   background: #007aff;
+
   color: white;
 }
 
+
 .secondary {
+
   background: #ddd;
+
   color: #111;
 }
 
+
 body.dark .secondary {
+
   background: #333;
+
   color: white;
 }
+
 
 .danger {
+
   background: #ff3b30;
+
   color: white;
 }
 
+
 .controls {
+
   display: flex;
+
   flex-wrap: wrap;
+
   gap: 8px;
+
   margin-top: 10px;
 }
 
+
 main {
+
   padding: 15px;
+
   max-width: 900px;
+
   margin: auto;
 }
 
+
 .song-list {
+
   display: flex;
+
   flex-direction: column;
+
   gap: 8px;
 }
 
+
 .song-item {
+
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
 
   gap: 10px;
@@ -118,35 +163,50 @@ main {
   border: 1px solid #ddd;
 }
 
+
 body.dark .song-item {
+
   background: #1d1d1d;
+
   border-color: #333;
 }
 
+
 .song-name {
+
   flex: 1;
 
   font-size: 18px;
+
   font-weight: 600;
 
   cursor: pointer;
 }
 
+
 .song-actions {
+
   display: flex;
+
   gap: 6px;
 }
 
+
 .editor {
+
   display: none;
 }
 
+
 .editor.active {
+
   display: block;
 }
 
+
 input,
 textarea {
+
   width: 100%;
 
   border: 1px solid #ccc;
@@ -158,17 +218,24 @@ textarea {
   font-size: 17px;
 
   background: white;
+
   color: #111;
 }
 
+
 body.dark input,
 body.dark textarea {
+
   background: #1d1d1d;
+
   color: white;
+
   border-color: #444;
 }
 
+
 textarea {
+
   min-height: 300px;
 
   resize: vertical;
@@ -176,11 +243,15 @@ textarea {
   line-height: 1.5;
 }
 
+
 .field {
+
   margin-bottom: 12px;
 }
 
+
 .field label {
+
   display: block;
 
   margin-bottom: 5px;
@@ -188,15 +259,21 @@ textarea {
   font-weight: 600;
 }
 
+
 .reader {
+
   display: none;
 }
 
+
 .reader.active {
+
   display: block;
 }
 
+
 .lyrics {
+
   white-space: pre-wrap;
 
   line-height: 1.65;
@@ -209,7 +286,9 @@ textarea {
     600px;
 }
 
+
 .reader-title {
+
   font-size: 26px;
 
   font-weight: 700;
@@ -217,11 +296,15 @@ textarea {
   margin-bottom: 10px;
 }
 
+
 .speed-control {
+
   padding: 12px 0;
 }
 
+
 .speed-header {
+
   display: flex;
 
   justify-content: space-between;
@@ -231,28 +314,27 @@ textarea {
   margin-bottom: 6px;
 }
 
+
 #speedValue {
+
   font-size: 18px;
 
   font-weight: 700;
 }
 
+
 #speedSlider {
+
   width: 100%;
 
   height: 32px;
 
-  /*
-     IMPORTANT:
-     Prevent touching the slider
-     from being interpreted as
-     a page scrolling gesture.
-  */
-
   touch-action: none;
 }
 
+
 .speed-labels {
+
   display: flex;
 
   justify-content: space-between;
@@ -262,7 +344,14 @@ textarea {
   opacity: .65;
 }
 
+
+/*
+   These are the controls that
+   stay with the top of the reader.
+*/
+
 .reader-controls {
+
   position: sticky;
 
   top: 0;
@@ -280,7 +369,9 @@ textarea {
   gap: 7px;
 }
 
+
 .font-size {
+
   display: flex;
 
   align-items: center;
@@ -288,7 +379,9 @@ textarea {
   gap: 7px;
 }
 
+
 .empty {
+
   opacity: .6;
 
   text-align: center;
@@ -297,16 +390,22 @@ textarea {
 }
 
 </style>
+
 </head>
 
 
 <body>
 
+
 <header>
 
 <h1>🎵 Lyric Scroll</h1>
 
+
 <div class="controls">
+
+
+<!-- ADD SONG -->
 
 <button
   class="primary"
@@ -317,6 +416,20 @@ textarea {
 </button>
 
 
+<!-- START / PAUSE -->
+
+<button
+  class="primary"
+  id="topScrollButton"
+  onclick="toggleScrolling()">
+
+▶ Start
+
+</button>
+
+
+<!-- DARK MODE -->
+
 <button
   class="secondary"
   onclick="toggleDarkMode()">
@@ -324,6 +437,7 @@ textarea {
 Dark Mode
 
 </button>
+
 
 </div>
 
@@ -333,59 +447,80 @@ Dark Mode
 <main>
 
 
-<!-- SONG LIST -->
+<!-- =====================================================
+     SONG LIST
+     ===================================================== -->
 
 <section id="songListView">
 
 <h2>My Songs</h2>
+
 
 <div
   id="songList"
   class="song-list">
 </div>
 
+
 </section>
 
 
-<!-- EDITOR -->
+
+<!-- =====================================================
+     EDITOR
+     ===================================================== -->
 
 <section
   id="editor"
   class="editor">
 
+
 <h2 id="editorHeading">
+
 Add Song
+
 </h2>
 
 
 <div class="field">
 
+
 <label for="songTitle">
+
 Song Title
+
 </label>
+
 
 <input
   id="songTitle"
   type="text"
   placeholder="Song title">
 
+
 </div>
 
 
 <div class="field">
 
+
 <label for="songLyrics">
+
 Lyrics
+
 </label>
+
 
 <textarea
   id="songLyrics"
   placeholder="Paste or type your lyrics here..."></textarea>
 
+
 </div>
 
 
 <div class="controls">
+
 
 <button
   class="primary"
@@ -404,35 +539,33 @@ Cancel
 
 </button>
 
+
 </div>
+
 
 </section>
 
 
-<!-- READER -->
+
+<!-- =====================================================
+     READER
+     ===================================================== -->
 
 <section
   id="reader"
   class="reader">
 
 
+<!-- READER CONTROLS -->
+
 <div class="reader-controls">
+
 
 <button
   class="secondary"
   onclick="closeReader()">
 
 ← Songs
-
-</button>
-
-
-<button
-  class="primary"
-  onclick="toggleScrolling()"
-  id="scrollButton">
-
-▶ Start
 
 </button>
 
@@ -447,6 +580,7 @@ Cancel
 
 
 <div class="font-size">
+
 
 <button
   class="secondary"
@@ -465,24 +599,35 @@ A+
 
 </button>
 
-</div>
 
 </div>
 
 
-<!-- SPEED -->
+</div>
+
+
+
+<!-- SPEED CONTROL -->
 
 <div class="speed-control">
 
+
 <div class="speed-header">
 
+
 <span>
+
 Scroll Speed
+
 </span>
 
+
 <strong id="speedValue">
+
 5
+
 </strong>
+
 
 </div>
 
@@ -498,18 +643,29 @@ Scroll Speed
 
 <div class="speed-labels">
 
+
 <span>
+
 STOP
+
 </span>
+
 
 <span>
+
 FAST
+
 </span>
 
-</div>
 
 </div>
 
+
+</div>
+
+
+
+<!-- SONG TITLE -->
 
 <div
   id="readerTitle"
@@ -517,14 +673,20 @@ FAST
 </div>
 
 
+
+<!-- LYRICS -->
+
 <div
   id="lyrics"
   class="lyrics">
 </div>
 
+
 </section>
 
+
 </main>
+
 
 
 <script>
@@ -545,11 +707,13 @@ let songs =
 let editingSongId = null;
 
 
+
 /* =====================================================
    DISPLAY SONGS
    ===================================================== */
 
 function displaySongs() {
+
 
   const list =
     document.getElementById(
@@ -561,6 +725,7 @@ function displaySongs() {
 
 
   if (songs.length === 0) {
+
 
     list.innerHTML = `
 
@@ -576,11 +741,14 @@ function displaySongs() {
 
     `;
 
+
     return;
+
   }
 
 
   songs.forEach(song => {
+
 
     const item =
       document.createElement(
@@ -605,6 +773,7 @@ function displaySongs() {
 
       <div class="song-actions">
 
+
         <button
           class="secondary"
           onclick="editSong(${song.id})">
@@ -622,6 +791,7 @@ function displaySongs() {
 
         </button>
 
+
       </div>
 
     `;
@@ -630,7 +800,9 @@ function displaySongs() {
     list.appendChild(item);
 
   });
+
 }
+
 
 
 /* =====================================================
@@ -638,6 +810,15 @@ function displaySongs() {
    ===================================================== */
 
 function showEditor() {
+
+
+  /*
+     Make sure scrolling is stopped
+     if the user was previously reading.
+  */
+
+  stopScrolling();
+
 
   editingSongId = null;
 
@@ -676,7 +857,9 @@ function showEditor() {
   ).classList.add(
     "active"
   );
+
 }
+
 
 
 /* =====================================================
@@ -684,6 +867,7 @@ function showEditor() {
    ===================================================== */
 
 function editSong(id) {
+
 
   const song =
     songs.find(
@@ -726,7 +910,9 @@ function editSong(id) {
   ).classList.add(
     "active"
   );
+
 }
+
 
 
 /* =====================================================
@@ -734,6 +920,7 @@ function editSong(id) {
    ===================================================== */
 
 function saveSong() {
+
 
   const title =
     document.getElementById(
@@ -749,27 +936,34 @@ function saveSong() {
 
   if (!title) {
 
+
     alert(
       "Please enter a song title."
     );
 
+
     return;
+
   }
 
 
   if (!lyrics) {
 
+
     alert(
       "Please enter some lyrics."
     );
 
+
     return;
+
   }
 
 
   if (
     editingSongId !== null
   ) {
+
 
     const song =
       songs.find(
@@ -783,9 +977,11 @@ function saveSong() {
 
     song.lyrics = lyrics;
 
+
   }
 
   else {
+
 
     songs.push({
 
@@ -811,8 +1007,11 @@ function saveSong() {
 
   cancelEditor();
 
+
   displaySongs();
+
 }
+
 
 
 /* =====================================================
@@ -820,6 +1019,7 @@ function saveSong() {
    ===================================================== */
 
 function deleteSong(id) {
+
 
   const song =
     songs.find(
@@ -836,7 +1036,9 @@ function deleteSong(id) {
     )
   ) {
 
+
     return;
+
   }
 
 
@@ -856,7 +1058,9 @@ function deleteSong(id) {
 
 
   displaySongs();
+
 }
+
 
 
 /* =====================================================
@@ -864,6 +1068,7 @@ function deleteSong(id) {
    ===================================================== */
 
 function cancelEditor() {
+
 
   editingSongId = null;
 
@@ -879,7 +1084,9 @@ function cancelEditor() {
     "songListView"
   ).style.display =
     "block";
+
 }
+
 
 
 /* =====================================================
@@ -891,6 +1098,7 @@ let currentSong = null;
 
 function openSong(id) {
 
+
   const song =
     songs.find(
       s => s.id === id
@@ -900,17 +1108,14 @@ function openSong(id) {
   if (!song) return;
 
 
-  currentSong = song;
-
-
   /*
-     IMPORTANT:
-     Make absolutely sure
-     opening a song starts
-     in the STOPPED state.
+     Always begin a song stopped.
   */
 
   stopScrolling();
+
+
+  currentSong = song;
 
 
   document.getElementById(
@@ -949,7 +1154,9 @@ function openSong(id) {
     0,
     0
   );
+
 }
+
 
 
 /* =====================================================
@@ -957,6 +1164,7 @@ function openSong(id) {
    ===================================================== */
 
 function closeReader() {
+
 
   stopScrolling();
 
@@ -972,7 +1180,9 @@ function closeReader() {
     "songListView"
   ).style.display =
     "block";
+
 }
+
 
 
 /* =====================================================
@@ -980,6 +1190,7 @@ function closeReader() {
    ===================================================== */
 
 const speeds = {
+
 
   0: 0,
 
@@ -1022,8 +1233,8 @@ let scrollSpeed = 42;
 
 
 /*
-   THIS is now the real
-   playing / stopped switch.
+   This is the actual
+   playing/stopped switch.
 */
 
 let isScrolling = false;
@@ -1031,7 +1242,9 @@ let isScrolling = false;
 
 let scrollAnimation = null;
 
+
 let lastTime = null;
+
 
 
 /* =====================================================
@@ -1039,6 +1252,7 @@ let lastTime = null;
    ===================================================== */
 
 function updateSpeed() {
+
 
   const level =
     Number(
@@ -1057,14 +1271,11 @@ function updateSpeed() {
 
 
   /*
-     IMPORTANT:
+     Moving the slider NEVER
+     starts scrolling.
 
-     Changing the slider
-     NEVER starts scrolling.
-
-     If the user moves the
-     slider to STOP, however,
-     we immediately stop.
+     If the user moves it to
+     STOP, we stop scrolling.
   */
 
   if (level === 0) {
@@ -1074,6 +1285,7 @@ function updateSpeed() {
   }
 
 }
+
 
 
 /* =====================================================
@@ -1086,42 +1298,41 @@ speedSlider.addEventListener(
 );
 
 
+
 /* =====================================================
    SCROLL ANIMATION
    ===================================================== */
 
 function scrollLyrics(timestamp) {
 
-  /*
-     If the user is no longer
-     supposed to be scrolling,
-     kill the animation.
-  */
 
   if (!isScrolling) {
 
+
     scrollAnimation = null;
 
+
     return;
+
   }
 
 
-  /*
-     If speed somehow becomes
-     zero, stop everything.
-  */
-
   if (scrollSpeed <= 0) {
+
 
     stopScrolling();
 
+
     return;
+
   }
 
 
   if (lastTime === null) {
 
-    lastTime = timestamp;
+
+    lastTime =
+      timestamp;
 
   }
 
@@ -1149,7 +1360,9 @@ function scrollLyrics(timestamp) {
     requestAnimationFrame(
       scrollLyrics
     );
+
 }
+
 
 
 /* =====================================================
@@ -1158,33 +1371,35 @@ function scrollLyrics(timestamp) {
 
 function toggleScrolling() {
 
+
   /*
-     If we're already scrolling,
-     PAUSE.
+     If currently playing,
+     pressing the button pauses.
   */
 
   if (isScrolling) {
 
+
     stopScrolling();
 
+
     return;
+
   }
 
 
   /*
-     If the slider is at STOP,
-     choose level 5 when the
-     user explicitly presses
-     START.
-
-     This is the ONLY place
-     where speed is changed
-     automatically.
+     If speed is STOP,
+     choose normal speed when
+     the user explicitly presses
+     Start.
   */
 
   if (scrollSpeed === 0) {
 
+
     speedSlider.value = 5;
+
 
     updateSpeed();
 
@@ -1192,11 +1407,11 @@ function toggleScrolling() {
 
 
   /*
-     Now and ONLY now do
-     we turn scrolling on.
+     NOW scrolling begins.
   */
 
   isScrolling = true;
+
 
   lastTime = null;
 
@@ -1207,11 +1422,10 @@ function toggleScrolling() {
     );
 
 
-  document.getElementById(
-    "scrollButton"
-  ).textContent =
-    "⏸ Pause";
+  updateScrollButtons();
+
 }
+
 
 
 /* =====================================================
@@ -1220,20 +1434,14 @@ function toggleScrolling() {
 
 function stopScrolling() {
 
-  /*
-     Turn the actual switch OFF.
-  */
 
   isScrolling = false;
 
 
-  /*
-     Cancel the animation.
-  */
-
   if (
     scrollAnimation !== null
   ) {
+
 
     cancelAnimationFrame(
       scrollAnimation
@@ -1244,33 +1452,59 @@ function stopScrolling() {
 
   scrollAnimation = null;
 
+
   lastTime = null;
 
 
-  /*
-     Reset button.
-  */
+  updateScrollButtons();
 
-  const button =
-    document.getElementById(
-      "scrollButton"
-    );
-
-
-  if (button) {
-
-    button.textContent =
-      "▶ Start";
-
-  }
 }
 
 
+
 /* =====================================================
-   RESET
+   UPDATE BOTH START BUTTONS
+   ===================================================== */
+
+function updateScrollButtons() {
+
+
+  const topButton =
+    document.getElementById(
+      "topScrollButton"
+    );
+
+
+  if (!topButton) return;
+
+
+  if (isScrolling) {
+
+
+    topButton.textContent =
+      "⏸ Pause";
+
+
+  }
+
+  else {
+
+
+    topButton.textContent =
+      "▶ Start";
+
+  }
+
+}
+
+
+
+/* =====================================================
+   RESET SCROLL
    ===================================================== */
 
 function resetScroll() {
+
 
   stopScrolling();
 
@@ -1282,7 +1516,9 @@ function resetScroll() {
     behavior: "instant"
 
   });
+
 }
+
 
 
 /* =====================================================
@@ -1294,10 +1530,12 @@ let fontSize = 26;
 
 function changeFontSize(amount) {
 
+
   fontSize += amount;
 
 
   if (fontSize < 16) {
+
 
     fontSize = 16;
 
@@ -1305,6 +1543,7 @@ function changeFontSize(amount) {
 
 
   if (fontSize > 60) {
+
 
     fontSize = 60;
 
@@ -1315,7 +1554,9 @@ function changeFontSize(amount) {
     "lyrics"
   ).style.fontSize =
     fontSize + "px";
+
 }
+
 
 
 /* =====================================================
@@ -1323,6 +1564,7 @@ function changeFontSize(amount) {
    ===================================================== */
 
 function toggleDarkMode() {
+
 
   document.body.classList.toggle(
     "dark"
@@ -1338,7 +1580,9 @@ function toggleDarkMode() {
     )
 
   );
+
 }
+
 
 
 /* =====================================================
@@ -1346,15 +1590,20 @@ function toggleDarkMode() {
    ===================================================== */
 
 if (
+
   localStorage.getItem(
     "lyricScrollDark"
   ) === "true"
+
 ) {
+
 
   document.body.classList.add(
     "dark"
   );
+
 }
+
 
 
 /* =====================================================
@@ -1362,6 +1611,7 @@ if (
    ===================================================== */
 
 function escapeHTML(text) {
+
 
   const div =
     document.createElement(
@@ -1374,7 +1624,9 @@ function escapeHTML(text) {
 
 
   return div.innerHTML;
+
 }
+
 
 
 /* =====================================================
@@ -1385,17 +1637,15 @@ displaySongs();
 
 
 /*
-   Set the initial speed
-   WITHOUT starting scrolling.
+   Set initial speed display.
 */
 
 updateSpeed();
 
 
 /*
-   Extra safety:
-   The app ALWAYS begins
-   stopped.
+   Make absolutely sure
+   the app starts stopped.
 */
 
 stopScrolling();
@@ -1403,4 +1653,5 @@ stopScrolling();
 </script>
 
 </body>
+
 </html>
