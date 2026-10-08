@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
 
-  <!-- Prevent browser zoom; font size is controlled by A− / A+ -->
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
@@ -152,6 +151,7 @@
     }
 
     /* Dark mode */
+
     body.dark {
       background: #111111;
       color: #eeeeee;
@@ -190,19 +190,40 @@
 <body>
 
   <header>
+
     <h1>🎵 Lyric Scroll</h1>
 
     <div class="header-buttons">
-      <button onclick="showAddSong()">＋ Add Song</button>
-      <button id="scrollButton" onclick="toggleScrolling()">▶ Start</button>
-      <button onclick="toggleDarkMode()" id="darkButton">🌙 Dark</button>
+
+      <button onclick="showAddSong()">
+        ＋ Add Song
+      </button>
+
+      <button
+        id="scrollButton"
+        onclick="toggleScrolling()"
+      >
+        ▶ Start
+      </button>
+
+      <button
+        onclick="toggleDarkMode()"
+        id="darkButton"
+      >
+        🌙 Dark
+      </button>
+
     </div>
+
   </header>
+
 
   <main>
 
-    <!-- Song List -->
+    <!-- SONG LIST -->
+
     <section id="songListSection">
+
       <h2>My Songs</h2>
 
       <div id="songList"></div>
@@ -210,47 +231,81 @@
       <p id="emptyMessage">
         No songs yet. Add your first song!
       </p>
+
     </section>
 
 
-    <!-- Add / Edit Song -->
-    <section id="editorSection" class="hidden">
+    <!-- ADD / EDIT SONG -->
 
-      <h2 id="editorTitle">Add Song</h2>
+    <section
+      id="editorSection"
+      class="hidden"
+    >
+
+      <h2 id="editorTitle">
+        Add Song
+      </h2>
 
       <div class="form-group">
-        <label for="songTitle">Song Title</label>
+
+        <label for="songTitle">
+          Song Title
+        </label>
+
         <input
           type="text"
           id="songTitle"
           placeholder="Enter song title"
         >
+
       </div>
 
+
       <div class="form-group">
-        <label for="songLyrics">Lyrics</label>
+
+        <label for="songLyrics">
+          Lyrics
+        </label>
+
         <textarea
           id="songLyrics"
           placeholder="Paste or type your lyrics here..."
         ></textarea>
+
       </div>
 
+
       <div class="reader-controls">
-        <button onclick="saveSong()">Save Song</button>
-        <button onclick="cancelEditor()">Cancel</button>
+
+        <button onclick="saveSong()">
+          Save Song
+        </button>
+
+        <button onclick="cancelEditor()">
+          Cancel
+        </button>
+
       </div>
 
     </section>
 
 
-    <!-- Reader -->
-    <section id="readerSection" class="hidden">
+    <!-- READER -->
+
+    <section
+      id="readerSection"
+      class="hidden"
+    >
 
       <h2 id="readerTitle"></h2>
 
+
       <div class="reader-controls">
 
-        <button onclick="toggleScrolling()" id="readerScrollButton">
+        <button
+          onclick="toggleScrolling()"
+          id="readerScrollButton"
+        >
           ▶ Start
         </button>
 
@@ -266,7 +321,9 @@
           A+
         </button>
 
+
         <div class="speed-box">
+
           <label
             for="speedSlider"
             style="display:inline; margin:0;"
@@ -283,10 +340,14 @@
             value="5"
           >
 
-          <span id="speedValue">5</span>
+          <span id="speedValue">
+            5
+          </span>
+
         </div>
 
       </div>
+
 
       <div id="lyricsDisplay"></div>
 
@@ -297,21 +358,22 @@
 
   <script>
 
-    /* -----------------------------
+    /* =============================
        SONG DATA
-    ----------------------------- */
+    ============================= */
 
     let songs = JSON.parse(
       localStorage.getItem("lyricScrollSongs") || "[]"
     );
 
     let currentSong = null;
+
     let editingSongId = null;
 
 
-    /* -----------------------------
+    /* =============================
        SCROLL SETTINGS
-    ----------------------------- */
+    ============================= */
 
     let fontSize = 24;
 
@@ -323,39 +385,57 @@
 
     let lastTime = null;
 
+    /*
+      This keeps fractional pixels
+      from being lost at slow speeds.
+    */
+
+    let scrollRemainder = 0;
+
 
     /*
-      Speed levels
+      SPEED SCALE
 
-      1 = 6 px/sec
-      2 = 12 px/sec
-      3 = 17 px/sec
-      4 = 23 px/sec
-      5 = 30 px/sec
-      6 = 39 px/sec
-      7 = 50 px/sec
-      8 = 62 px/sec
-      9 = 78 px/sec
-      10 = 95 px/sec
+      1  = 6
+      2  = 12
+      3  = 17
+      4  = 23
+      5  = 30
+      6  = 39
+      7  = 50
+      8  = 62
+      9  = 78
+      10 = 95
     */
 
     const speeds = {
+
       1: 6,
+
       2: 12,
+
       3: 17,
+
       4: 23,
+
       5: 30,
+
       6: 39,
+
       7: 50,
+
       8: 62,
+
       9: 78,
+
       10: 95
+
     };
 
 
-    /* -----------------------------
+    /* =============================
        ELEMENTS
-    ----------------------------- */
+    ============================= */
 
     const songList =
       document.getElementById("songList");
@@ -400,46 +480,57 @@
       document.getElementById("speedValue");
 
 
-    /* -----------------------------
+    /* =============================
        SAVE SONGS
-    ----------------------------- */
+    ============================= */
 
     function saveSongs() {
+
       localStorage.setItem(
         "lyricScrollSongs",
         JSON.stringify(songs)
       );
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        DISPLAY SONG LIST
-    ----------------------------- */
+    ============================= */
 
     function renderSongs() {
 
       songList.innerHTML = "";
 
       if (songs.length === 0) {
-        emptyMessage.style.display = "block";
+
+        emptyMessage.style.display =
+          "block";
+
         return;
       }
 
-      emptyMessage.style.display = "none";
+      emptyMessage.style.display =
+        "none";
+
 
       songs.forEach(song => {
 
         const item =
           document.createElement("div");
 
-        item.className = "song-item";
+        item.className =
+          "song-item";
+
 
         const title =
           document.createElement("div");
 
-        title.className = "song-title";
+        title.className =
+          "song-title";
 
-        title.textContent = song.title;
+        title.textContent =
+          song.title;
 
         title.onclick = () =>
           openSong(song.id);
@@ -448,13 +539,15 @@
         const actions =
           document.createElement("div");
 
-        actions.className = "song-actions";
+        actions.className =
+          "song-actions";
 
 
         const openButton =
           document.createElement("button");
 
-        openButton.textContent = "Open";
+        openButton.textContent =
+          "Open";
 
         openButton.onclick = () =>
           openSong(song.id);
@@ -463,7 +556,8 @@
         const editButton =
           document.createElement("button");
 
-        editButton.textContent = "Edit";
+        editButton.textContent =
+          "Edit";
 
         editButton.onclick = () =>
           editSong(song.id);
@@ -472,27 +566,41 @@
         const deleteButton =
           document.createElement("button");
 
-        deleteButton.textContent = "Delete";
+        deleteButton.textContent =
+          "Delete";
 
         deleteButton.onclick = () =>
           deleteSong(song.id);
 
 
-        actions.appendChild(openButton);
-        actions.appendChild(editButton);
-        actions.appendChild(deleteButton);
+        actions.appendChild(
+          openButton
+        );
+
+        actions.appendChild(
+          editButton
+        );
+
+        actions.appendChild(
+          deleteButton
+        );
+
 
         item.appendChild(title);
+
         item.appendChild(actions);
 
+
         songList.appendChild(item);
+
       });
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        SHOW ADD SONG
-    ----------------------------- */
+    ============================= */
 
     function showAddSong() {
 
@@ -507,28 +615,40 @@
 
       songLyrics.value = "";
 
-      songListSection.classList.add("hidden");
 
-      readerSection.classList.add("hidden");
+      songListSection.classList.add(
+        "hidden"
+      );
 
-      editorSection.classList.remove("hidden");
+      readerSection.classList.add(
+        "hidden"
+      );
+
+      editorSection.classList.remove(
+        "hidden"
+      );
+
 
       window.scrollTo(0, 0);
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        EDIT SONG
-    ----------------------------- */
+    ============================= */
 
     function editSong(id) {
 
       stopScrolling();
 
       const song =
-        songs.find(s => s.id === id);
+        songs.find(
+          s => s.id === id
+        );
 
       if (!song) return;
+
 
       editingSongId = id;
 
@@ -541,19 +661,28 @@
       songLyrics.value =
         song.lyrics;
 
-      songListSection.classList.add("hidden");
 
-      readerSection.classList.add("hidden");
+      songListSection.classList.add(
+        "hidden"
+      );
 
-      editorSection.classList.remove("hidden");
+      readerSection.classList.add(
+        "hidden"
+      );
+
+      editorSection.classList.remove(
+        "hidden"
+      );
+
 
       window.scrollTo(0, 0);
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        SAVE SONG
-    ----------------------------- */
+    ============================= */
 
     function saveSong() {
 
@@ -563,10 +692,16 @@
       const lyrics =
         songLyrics.value;
 
+
       if (!title) {
-        alert("Please enter a song title.");
+
+        alert(
+          "Please enter a song title."
+        );
+
         return;
       }
+
 
       if (editingSongId !== null) {
 
@@ -575,29 +710,38 @@
             s => s.id === editingSongId
           );
 
+
         if (song) {
 
-          song.title = title;
+          song.title =
+            title;
 
-          song.lyrics = lyrics;
+          song.lyrics =
+            lyrics;
 
           /*
-            IMPORTANT:
-            Do NOT change speedLevel here.
-            This preserves the song's saved speed.
+            Speed is intentionally
+            NOT changed here.
           */
+
         }
 
       } else {
 
         songs.push({
+
           id: Date.now(),
+
           title: title,
+
           lyrics: lyrics,
+
           speedLevel: 5
+
         });
 
       }
+
 
       saveSongs();
 
@@ -606,137 +750,194 @@
       renderSongs();
 
       cancelEditor();
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        CANCEL EDITOR
-    ----------------------------- */
+    ============================= */
 
     function cancelEditor() {
 
-      editorSection.classList.add("hidden");
+      editorSection.classList.add(
+        "hidden"
+      );
 
-      readerSection.classList.add("hidden");
+      readerSection.classList.add(
+        "hidden"
+      );
 
-      songListSection.classList.remove("hidden");
+      songListSection.classList.remove(
+        "hidden"
+      );
+
 
       window.scrollTo(0, 0);
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        DELETE SONG
-    ----------------------------- */
+    ============================= */
 
     function deleteSong(id) {
 
       const song =
-        songs.find(s => s.id === id);
+        songs.find(
+          s => s.id === id
+        );
 
       if (!song) return;
+
 
       const confirmed =
         confirm(
           `Delete "${song.title}"?`
         );
 
+
       if (!confirmed) return;
+
 
       if (
         currentSong &&
         currentSong.id === id
       ) {
+
         stopScrolling();
+
         currentSong = null;
+
       }
+
 
       songs =
         songs.filter(
           s => s.id !== id
         );
 
+
       saveSongs();
 
       renderSongs();
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        OPEN SONG
-    ----------------------------- */
+    ============================= */
 
     function openSong(id) {
 
       stopScrolling();
 
+
       const song =
-        songs.find(s => s.id === id);
+        songs.find(
+          s => s.id === id
+        );
 
       if (!song) return;
 
-      currentSong = song;
+
+      currentSong =
+        song;
+
 
       readerTitle.textContent =
         song.title;
 
+
       lyricsDisplay.textContent =
         song.lyrics;
 
+
       /*
-        Load this song's saved speed.
+        Load saved speed.
 
         Older songs that don't have
-        a saved speed use Speed 5.
+        speedLevel use Speed 5.
       */
 
       const savedLevel =
-        Number.isInteger(song.speedLevel)
+        Number.isInteger(
+          song.speedLevel
+        )
           ? song.speedLevel
           : 5;
+
 
       speedSlider.value =
         savedLevel;
 
+
       updateSpeed(false);
 
-      songListSection.classList.add("hidden");
 
-      editorSection.classList.add("hidden");
+      songListSection.classList.add(
+        "hidden"
+      );
 
-      readerSection.classList.remove("hidden");
+      editorSection.classList.add(
+        "hidden"
+      );
+
+      readerSection.classList.remove(
+        "hidden"
+      );
+
 
       window.scrollTo(0, 0);
+
 
       applyFontSize();
 
       updateScrollButton();
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        SPEED
-    ----------------------------- */
+    ============================= */
 
-    function updateSpeed(save = true) {
+    function updateSpeed(
+      save = true
+    ) {
 
       let level =
-        Number(speedSlider.value);
+        Number(
+          speedSlider.value
+        );
 
-      if (level < 1) level = 1;
 
-      if (level > 10) level = 10;
+      if (level < 1) {
+        level = 1;
+      }
 
-      speedSlider.value = level;
+
+      if (level > 10) {
+        level = 10;
+      }
+
+
+      speedSlider.value =
+        level;
+
 
       scrollSpeed =
         speeds[level];
 
+
       speedValue.textContent =
         level;
 
+
       /*
-        Save the speed to this song.
+        Save speed to current song.
       */
 
       if (
@@ -748,7 +949,9 @@
           level;
 
         saveSongs();
+
       }
+
     }
 
 
@@ -758,9 +961,9 @@
     );
 
 
-    /* -----------------------------
+    /* =============================
        START / PAUSE
-    ----------------------------- */
+    ============================= */
 
     function toggleScrolling() {
 
@@ -771,24 +974,32 @@
         return;
       }
 
+
       isScrolling = true;
 
       lastTime = null;
+
+      scrollRemainder = 0;
+
 
       scrollAnimation =
         requestAnimationFrame(
           scrollLyrics
         );
 
+
       updateScrollButton();
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        SCROLL ANIMATION
-    ----------------------------- */
+    ============================= */
 
-    function scrollLyrics(timestamp) {
+    function scrollLyrics(
+      timestamp
+    ) {
 
       if (!isScrolling) {
 
@@ -797,54 +1008,111 @@
         return;
       }
 
+
       if (lastTime === null) {
-        lastTime = timestamp;
+
+        lastTime =
+          timestamp;
+
       }
 
+
       const elapsed =
-        timestamp - lastTime;
+        timestamp -
+        lastTime;
 
-      lastTime = timestamp;
 
-      window.scrollBy(
-        0,
+      lastTime =
+        timestamp;
+
+
+      /*
+        Calculate exact movement,
+        including fractional pixels.
+      */
+
+      const movement =
         scrollSpeed *
-        (elapsed / 1000)
-      );
+        (elapsed / 1000);
+
+
+      /*
+        Save fractional movement
+        instead of throwing it away.
+      */
+
+      scrollRemainder +=
+        movement;
+
+
+      const pixelsToMove =
+        Math.floor(
+          scrollRemainder
+        );
+
+
+      if (pixelsToMove > 0) {
+
+        window.scrollBy(
+          0,
+          pixelsToMove
+        );
+
+
+        scrollRemainder -=
+          pixelsToMove;
+
+      }
+
 
       scrollAnimation =
         requestAnimationFrame(
           scrollLyrics
         );
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        STOP SCROLLING
-    ----------------------------- */
+    ============================= */
 
     function stopScrolling() {
 
-      isScrolling = false;
+      isScrolling =
+        false;
 
-      lastTime = null;
 
-      if (scrollAnimation !== null) {
+      lastTime =
+        null;
+
+
+      scrollRemainder =
+        0;
+
+
+      if (
+        scrollAnimation !== null
+      ) {
 
         cancelAnimationFrame(
           scrollAnimation
         );
 
-        scrollAnimation = null;
+        scrollAnimation =
+          null;
+
       }
 
+
       updateScrollButton();
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        UPDATE BUTTON TEXT
-    ----------------------------- */
+    ============================= */
 
     function updateScrollButton() {
 
@@ -853,46 +1121,62 @@
           ? "⏸ Pause"
           : "▶ Start";
 
+
       scrollButton.textContent =
         text;
 
+
       readerScrollButton.textContent =
         text;
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        RESET SCROLL
-    ----------------------------- */
+    ============================= */
 
     function resetScroll() {
 
       stopScrolling();
 
+
       window.scrollTo(
         0,
         0
       );
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        FONT SIZE
-    ----------------------------- */
+    ============================= */
 
-    function changeFontSize(amount) {
+    function changeFontSize(
+      amount
+    ) {
 
-      fontSize += amount;
+      fontSize +=
+        amount;
+
 
       if (fontSize < 14) {
+
         fontSize = 14;
+
       }
+
 
       if (fontSize > 60) {
+
         fontSize = 60;
+
       }
 
+
       applyFontSize();
+
     }
 
 
@@ -900,12 +1184,13 @@
 
       lyricsDisplay.style.fontSize =
         fontSize + "px";
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        DARK MODE
-    ----------------------------- */
+    ============================= */
 
     function toggleDarkMode() {
 
@@ -913,17 +1198,21 @@
         "dark"
       );
 
+
       const isDark =
         document.body.classList.contains(
           "dark"
         );
+
 
       localStorage.setItem(
         "lyricScrollDark",
         isDark
       );
 
+
       updateDarkButton();
+
     }
 
 
@@ -934,40 +1223,48 @@
           "darkButton"
         );
 
+
       const isDark =
         document.body.classList.contains(
           "dark"
         );
 
+
       darkButton.textContent =
         isDark
           ? "☀️ Light"
           : "🌙 Dark";
+
     }
 
 
-    /* -----------------------------
+    /* =============================
        LOAD DARK MODE
-    ----------------------------- */
+    ============================= */
 
     const savedDarkMode =
       localStorage.getItem(
         "lyricScrollDark"
       );
 
-    if (savedDarkMode === "true") {
+
+    if (
+      savedDarkMode === "true"
+    ) {
 
       document.body.classList.add(
         "dark"
       );
+
     }
+
 
     updateDarkButton();
 
 
-    /* -----------------------------
+    /* =============================
        INITIALIZE
-    ----------------------------- */
+    ============================= */
 
     renderSongs();
 
