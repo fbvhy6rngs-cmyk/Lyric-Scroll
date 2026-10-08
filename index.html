@@ -1,1755 +1,1235 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width,
-               initial-scale=1.0,
-               maximum-scale=1.0,
-               user-scalable=no">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lyric Scroll</title>
 
-
 <style>
-
-/* =====================================================
-   BASIC PAGE
-   ===================================================== */
-
-* {
-  box-sizing: border-box;
-}
-
-
-html {
-  scroll-behavior: auto;
-}
-
-
-body {
-
-  margin: 0;
-
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-
-  background: #f5f5f5;
-
-  color: #111;
-
-}
-
-
-body.dark {
-
-  background: #111;
-
-  color: #eee;
-
-}
-
-
-
-/* =====================================================
-   FIXED TOP BAR
-   ===================================================== */
-
-header {
-
-  position: fixed;
-
-  top: 0;
-
-  left: 0;
-
-  right: 0;
-
-  z-index: 1000;
-
-  background: #f5f5f5;
-
-  padding: 12px 15px;
-
-  border-bottom: 1px solid #ccc;
-
-}
-
-
-body.dark header {
-
-  background: #111;
-
-  border-bottom-color: #333;
-
-}
-
-
-h1 {
-
-  margin: 0 0 10px;
-
-  font-size: 22px;
-
-}
-
-
-/*
-   The buttons in the top bar.
-*/
-
-header .controls {
-
-  display: flex;
-
-  flex-wrap: wrap;
-
-  gap: 7px;
-
-  margin: 0;
-
-}
-
-
-
-/* =====================================================
-   BUTTONS
-   ===================================================== */
-
-button {
-
-  border: none;
-
-  border-radius: 10px;
-
-  padding: 10px 13px;
-
-  font-size: 16px;
-
-  cursor: pointer;
-
-  -webkit-tap-highlight-color:
-    transparent;
-
-}
-
-
-.primary {
-
-  background: #007aff;
-
-  color: white;
-
-}
-
-
-.secondary {
-
-  background: #ddd;
-
-  color: #111;
-
-}
-
-
-body.dark .secondary {
-
-  background: #333;
-
-  color: white;
-
-}
-
-
-.danger {
-
-  background: #ff3b30;
-
-  color: white;
-
-}
-
-
-
-/* =====================================================
-   MAIN CONTENT
-   ===================================================== */
-
-main {
-
-  padding: 15px;
-
-  /*
-     Leave room for the fixed
-     header at the top.
-  */
-
-  padding-top: 120px;
-
-  max-width: 900px;
-
-  margin: auto;
-
-}
-
-
-
-/* =====================================================
-   SONG LIST
-   ===================================================== */
-
-.song-list {
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 8px;
-
-}
-
-
-.song-item {
-
-  display: flex;
-
-  justify-content: space-between;
-
-  align-items: center;
-
-  gap: 10px;
-
-  padding: 14px;
-
-  border-radius: 12px;
-
-  background: white;
-
-  border: 1px solid #ddd;
-
-}
-
-
-body.dark .song-item {
-
-  background: #1d1d1d;
-
-  border-color: #333;
-
-}
-
-
-.song-name {
-
-  flex: 1;
-
-  font-size: 18px;
-
-  font-weight: 600;
-
-  cursor: pointer;
-
-}
-
-
-.song-actions {
-
-  display: flex;
-
-  gap: 6px;
-
-}
-
-
-
-/* =====================================================
-   EDITOR
-   ===================================================== */
-
-.editor {
-
-  display: none;
-
-}
-
-
-.editor.active {
-
-  display: block;
-
-}
-
-
-input,
-textarea {
-
-  width: 100%;
-
-  border: 1px solid #ccc;
-
-  border-radius: 10px;
-
-  padding: 12px;
-
-  font-size: 17px;
-
-  background: white;
-
-  color: #111;
-
-}
-
-
-body.dark input,
-body.dark textarea {
-
-  background: #1d1d1d;
-
-  color: white;
-
-  border-color: #444;
-
-}
-
-
-textarea {
-
-  min-height: 300px;
-
-  resize: vertical;
-
-  line-height: 1.5;
-
-}
-
-
-.field {
-
-  margin-bottom: 12px;
-
-}
-
-
-.field label {
-
-  display: block;
-
-  margin-bottom: 5px;
-
-  font-weight: 600;
-
-}
-
-
-
-/* =====================================================
-   READER
-   ===================================================== */
-
-.reader {
-
-  display: none;
-
-}
-
-
-.reader.active {
-
-  display: block;
-
-}
-
-
-.reader-title {
-
-  font-size: 26px;
-
-  font-weight: 700;
-
-  margin-bottom: 10px;
-
-}
-
-
-.lyrics {
-
-  white-space: pre-wrap;
-
-  line-height: 1.65;
-
-  font-size: 26px;
-
-  padding:
-
-    25px
-
-    10px
-
-    700px;
-
-}
-
-
-
-/* =====================================================
-   READER CONTROLS
-   ===================================================== */
-
-.reader-controls {
-
-  position: sticky;
-
-  top: 0;
-
-  z-index: 100;
-
-  background: inherit;
-
-  padding: 8px 0;
-
-  display: flex;
-
-  flex-wrap: wrap;
-
-  gap: 7px;
-
-}
-
-
-.font-size {
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 7px;
-
-}
-
-
-
-/* =====================================================
-   SPEED CONTROL
-   ===================================================== */
-
-.speed-control {
-
-  padding: 12px 0;
-
-}
-
-
-.speed-header {
-
-  display: flex;
-
-  justify-content: space-between;
-
-  align-items: center;
-
-  margin-bottom: 6px;
-
-}
-
-
-#speedValue {
-
-  font-size: 18px;
-
-  font-weight: 700;
-
-}
-
-
-#speedSlider {
-
-  width: 100%;
-
-  height: 32px;
-
-  touch-action: none;
-
-}
-
-
-.speed-labels {
-
-  display: flex;
-
-  justify-content: space-between;
-
-  font-size: 11px;
-
-  opacity: .65;
-
-}
-
-
-
-/* =====================================================
-   EMPTY SONG LIST
-   ===================================================== */
-
-.empty {
-
-  opacity: .6;
-
-  text-align: center;
-
-  padding: 40px 10px;
-
-}
-
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #ffffff;
+    color: #111111;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: #f5f5f5;
+    padding: 12px 15px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .app-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-right: auto;
+  }
+
+  button {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 15px;
+    cursor: pointer;
+    background: #222;
+    color: white;
+  }
+
+  button:active {
+    transform: scale(0.97);
+  }
+
+  .secondary {
+    background: #ddd;
+    color: #111;
+  }
+
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 120px 15px 40px;
+  }
+
+  h1, h2 {
+    margin-top: 0;
+  }
+
+  .song-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .song-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .song-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 18px;
+    cursor: pointer;
+    word-break: break-word;
+  }
+
+  .controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  textarea,
+  input[type="text"] {
+    width: 100%;
+    font-size: 17px;
+    padding: 12px;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-family: inherit;
+  }
+
+  textarea {
+    min-height: 400px;
+    resize: vertical;
+  }
+
+  label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+
+  .reader-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+  }
+
+  .reader-controls button {
+    min-width: 48px;
+  }
+
+  .speed-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 220px;
+  }
+
+  #speedSlider {
+    flex: 1;
+  }
+
+  #speedValue {
+    min-width: 45px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  #lyricsDisplay {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    font-size: 24px;
+    padding-bottom: 80vh;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  .empty {
+    color: #666;
+    padding: 20px 0;
+  }
+
+  /* DARK MODE */
+
+  body.dark {
+    background: #111;
+    color: #eee;
+  }
+
+  body.dark header {
+    background: #111;
+    border-bottom-color: #333;
+  }
+
+  body.dark .song-item,
+  body.dark .reader-controls {
+    border-color: #444;
+  }
+
+  body.dark .secondary {
+    background: #333;
+    color: #eee;
+  }
+
+  body.dark textarea,
+  body.dark input[type="text"] {
+    background: #222;
+    color: #eee;
+    border-color: #555;
+  }
+
+  body.dark .empty {
+    color: #aaa;
+  }
+
+  @media (max-width: 600px) {
+    .app-title {
+      width: 100%;
+      margin-bottom: 4px;
+    }
+
+    .header-inner {
+      gap: 6px;
+    }
+
+    header button {
+      flex: 1;
+    }
+
+    .song-item {
+      flex-wrap: wrap;
+    }
+
+    .song-name {
+      width: 100%;
+      flex-basis: 100%;
+      margin-bottom: 4px;
+    }
+
+    .reader-controls {
+      align-items: stretch;
+    }
+
+    .speed-box {
+      width: 100%;
+      flex-basis: 100%;
+    }
+
+    #lyricsDisplay {
+      font-size: 24px;
+    }
+  }
 </style>
-
 </head>
-
 
 <body>
 
-
-
-<!-- =====================================================
-     FIXED HEADER
-     ===================================================== -->
-
 <header>
+  <div class="header-inner">
+    <div class="app-title">🎵 Lyric Scroll</div>
 
+    <button id="addSongButton">＋ Add Song</button>
 
-<h1>
-🎵 Lyric Scroll
-</h1>
+    <button id="topScrollButton">▶ Start</button>
 
-
-<div class="controls">
-
-
-<!-- ADD SONG -->
-
-<button
-  class="primary"
-  onclick="showEditor()">
-
-+ Add Song
-
-</button>
-
-
-<!-- START / PAUSE -->
-
-<button
-  class="primary"
-  id="topScrollButton"
-  onclick="toggleScrolling()">
-
-▶ Start
-
-</button>
-
-
-<!-- DARK MODE -->
-
-<button
-  class="secondary"
-  onclick="toggleDarkMode()">
-
-Dark Mode
-
-</button>
-
-
-</div>
-
+    <button id="darkModeButton">🌙 Dark</button>
+  </div>
 </header>
-
-
-
-<!-- =====================================================
-     MAIN
-     ===================================================== -->
 
 <main>
 
+  <!-- SONG LIST -->
 
+  <section id="songListScreen">
 
-<!-- =====================================================
-     SONG LIST
-     ===================================================== -->
+    <h1>My Songs</h1>
 
-<section id="songListView">
+    <div id="songList" class="song-list"></div>
 
+    <div id="emptyMessage" class="empty">
+      No songs yet. Tap “Add Song” to get started.
+    </div>
 
-<h2>
-My Songs
-</h2>
+  </section>
 
 
-<div
-  id="songList"
-  class="song-list">
-</div>
+  <!-- EDITOR -->
 
+  <section id="editorScreen" class="hidden">
 
-</section>
+    <h2 id="editorHeading">Add Song</h2>
 
+    <label for="songTitle">Song Title</label>
 
+    <input
+      type="text"
+      id="songTitle"
+      placeholder="Enter song title"
+    >
 
-<!-- =====================================================
-     SONG EDITOR
-     ===================================================== -->
+    <label for="songLyrics">Lyrics</label>
 
-<section
-  id="editor"
-  class="editor">
+    <textarea
+      id="songLyrics"
+      placeholder="Paste or type your lyrics here..."
+    ></textarea>
 
+    <div class="controls">
 
-<h2
-  id="editorHeading">
+      <button id="saveSongButton">
+        Save Song
+      </button>
 
-Add Song
+      <button
+        id="cancelEditButton"
+        class="secondary"
+      >
+        Cancel
+      </button>
 
-</h2>
+    </div>
 
+  </section>
 
-<div class="field">
 
+  <!-- READER -->
 
-<label for="songTitle">
+  <section id="readerScreen" class="hidden">
 
-Song Title
+    <h2 id="readerTitle"></h2>
 
-</label>
+    <div class="controls">
 
+      <button
+        id="backToSongsButton"
+        class="secondary"
+      >
+        ← Songs
+      </button>
 
-<input
-  id="songTitle"
-  type="text"
-  placeholder="Song title">
+      <button
+        id="resetButton"
+        class="secondary"
+      >
+        ↺ Reset
+      </button>
 
+      <button
+        id="fontSmallerButton"
+        class="secondary"
+      >
+        A−
+      </button>
 
-</div>
+      <button
+        id="fontLargerButton"
+        class="secondary"
+      >
+        A+
+      </button>
 
+    </div>
 
-<div class="field">
 
+    <div class="reader-controls">
 
-<label for="songLyrics">
+      <div class="speed-box">
 
-Lyrics
+        <strong>Speed:</strong>
 
-</label>
+        <input
+          type="range"
+          id="speedSlider"
+          min="0"
+          max="10"
+          step="1"
+          value="5"
+        >
 
+        <span id="speedValue">5</span>
 
-<textarea
-  id="songLyrics"
-  placeholder="Paste or type your lyrics here..."></textarea>
+      </div>
 
+    </div>
 
-</div>
 
+    <div id="lyricsDisplay"></div>
 
-<div class="controls">
-
-
-<button
-  class="primary"
-  onclick="saveSong()">
-
-Save Song
-
-</button>
-
-
-<button
-  class="secondary"
-  onclick="cancelEditor()">
-
-Cancel
-
-</button>
-
-
-</div>
-
-
-</section>
-
-
-
-<!-- =====================================================
-     READER
-     ===================================================== -->
-
-<section
-  id="reader"
-  class="reader">
-
-
-<div class="reader-controls">
-
-
-<button
-  class="secondary"
-  onclick="closeReader()">
-
-← Songs
-
-</button>
-
-
-<button
-  class="secondary"
-  onclick="resetScroll()">
-
-↺ Reset
-
-</button>
-
-
-<div class="font-size">
-
-
-<button
-  class="secondary"
-  onclick="changeFontSize(-2)">
-
-A−
-
-</button>
-
-
-<button
-  class="secondary"
-  onclick="changeFontSize(2)">
-
-A+
-
-</button>
-
-
-</div>
-
-
-</div>
-
-
-
-<!-- SPEED -->
-
-<div class="speed-control">
-
-
-<div class="speed-header">
-
-
-<span>
-Scroll Speed
-</span>
-
-
-<strong id="speedValue">
-5
-</strong>
-
-
-</div>
-
-
-<input
-  type="range"
-  id="speedSlider"
-  min="0"
-  max="10"
-  value="5"
-  step="1">
-
-
-<div class="speed-labels">
-
-
-<span>
-STOP
-</span>
-
-
-<span>
-FAST
-</span>
-
-
-</div>
-
-
-</div>
-
-
-
-<!-- SONG TITLE -->
-
-<div
-  id="readerTitle"
-  class="reader-title">
-</div>
-
-
-
-<!-- LYRICS -->
-
-<div
-  id="lyrics"
-  class="lyrics">
-</div>
-
-
-</section>
-
+  </section>
 
 </main>
 
 
-
 <script>
 
+  /* --------------------------------
+     APP DATA
+  -------------------------------- */
 
-/* =====================================================
-   SONG STORAGE
-   ===================================================== */
-
-let songs =
-  JSON.parse(
-    localStorage.getItem(
-      "lyricScrollSongs"
-    ) || "[]"
+  let songs = JSON.parse(
+    localStorage.getItem("lyricScrollSongs") || "[]"
   );
 
+  let currentSong = null;
 
-let editingSongId = null;
+  let editingSongId = null;
+
+  let fontSize = 24;
+
+  let scrollSpeed = 42;
+
+  let isScrolling = false;
+
+  let scrollAnimation = null;
+
+  let lastTime = null;
 
 
+  /* --------------------------------
+     SPEED SETTINGS
+  -------------------------------- */
 
-/* =====================================================
-   DISPLAY SONGS
-   ===================================================== */
+  const speeds = {
 
-function displaySongs() {
+    0: 0,
+
+    // Slower than before
+    1: 7,
+
+    2: 13,
+
+    3: 21,
+
+    4: 31,
+
+    5: 42,
+
+    6: 54,
+
+    7: 68,
+
+    8: 84,
+
+    9: 105,
+
+    10: 130
+
+  };
 
 
-  const list =
-    document.getElementById(
-      "songList"
+  /* --------------------------------
+     ELEMENTS
+  -------------------------------- */
+
+  const songListScreen =
+    document.getElementById("songListScreen");
+
+  const editorScreen =
+    document.getElementById("editorScreen");
+
+  const readerScreen =
+    document.getElementById("readerScreen");
+
+  const songList =
+    document.getElementById("songList");
+
+  const emptyMessage =
+    document.getElementById("emptyMessage");
+
+  const songTitle =
+    document.getElementById("songTitle");
+
+  const songLyrics =
+    document.getElementById("songLyrics");
+
+  const editorHeading =
+    document.getElementById("editorHeading");
+
+  const readerTitle =
+    document.getElementById("readerTitle");
+
+  const lyricsDisplay =
+    document.getElementById("lyricsDisplay");
+
+  const speedSlider =
+    document.getElementById("speedSlider");
+
+  const speedValue =
+    document.getElementById("speedValue");
+
+  const topScrollButton =
+    document.getElementById("topScrollButton");
+
+
+  /* --------------------------------
+     SAVE SONGS
+  -------------------------------- */
+
+  function saveSongs() {
+
+    localStorage.setItem(
+      "lyricScrollSongs",
+      JSON.stringify(songs)
     );
-
-
-  list.innerHTML = "";
-
-
-  if (songs.length === 0) {
-
-
-    list.innerHTML = `
-
-      <div class="empty">
-
-        No songs yet.<br>
-
-        Tap
-        <strong>+ Add Song</strong>
-        to get started.
-
-      </div>
-
-    `;
-
-
-    return;
 
   }
 
 
-  songs.forEach(song => {
+  /* --------------------------------
+     SHOW SCREEN
+  -------------------------------- */
+
+  function showScreen(screen) {
+
+    songListScreen.classList.add("hidden");
+
+    editorScreen.classList.add("hidden");
+
+    readerScreen.classList.add("hidden");
+
+    screen.classList.remove("hidden");
+
+    window.scrollTo(0, 0);
+
+  }
 
 
-    const item =
-      document.createElement(
-        "div"
+  /* --------------------------------
+     SONG LIST
+  -------------------------------- */
+
+  function renderSongList() {
+
+    songList.innerHTML = "";
+
+    if (songs.length === 0) {
+
+      emptyMessage.classList.remove("hidden");
+
+      return;
+
+    }
+
+    emptyMessage.classList.add("hidden");
+
+
+    songs.forEach(song => {
+
+      const item =
+        document.createElement("div");
+
+      item.className = "song-item";
+
+
+      const name =
+        document.createElement("div");
+
+      name.className = "song-name";
+
+      name.textContent = song.title;
+
+      name.addEventListener(
+        "click",
+        () => openSong(song.id)
       );
 
 
-    item.className =
-      "song-item";
+      const editButton =
+        document.createElement("button");
 
+      editButton.textContent = "Edit";
 
-    item.innerHTML = `
+      editButton.className = "secondary";
 
-      <div
-        class="song-name"
-        onclick="openSong(${song.id})">
-
-        ${escapeHTML(song.title)}
-
-      </div>
-
-
-      <div class="song-actions">
-
-
-        <button
-          class="secondary"
-          onclick="editSong(${song.id})">
-
-          Edit
-
-        </button>
-
-
-        <button
-          class="danger"
-          onclick="deleteSong(${song.id})">
-
-          Delete
-
-        </button>
-
-
-      </div>
-
-    `;
-
-
-    list.appendChild(item);
-
-  });
-
-}
-
-
-
-/* =====================================================
-   ADD SONG
-   ===================================================== */
-
-function showEditor() {
-
-
-  stopScrolling();
-
-
-  editingSongId = null;
-
-
-  document.getElementById(
-    "editorHeading"
-  ).textContent =
-    "Add Song";
-
-
-  document.getElementById(
-    "songTitle"
-  ).value = "";
-
-
-  document.getElementById(
-    "songLyrics"
-  ).value = "";
-
-
-  document.getElementById(
-    "songListView"
-  ).style.display =
-    "none";
-
-
-  document.getElementById(
-    "reader"
-  ).classList.remove(
-    "active"
-  );
-
-
-  document.getElementById(
-    "editor"
-  ).classList.add(
-    "active"
-  );
-
-}
-
-
-
-/* =====================================================
-   EDIT SONG
-   ===================================================== */
-
-function editSong(id) {
-
-
-  const song =
-    songs.find(
-      s => s.id === id
-    );
-
-
-  if (!song) return;
-
-
-  editingSongId = id;
-
-
-  document.getElementById(
-    "editorHeading"
-  ).textContent =
-    "Edit Song";
-
-
-  document.getElementById(
-    "songTitle"
-  ).value =
-    song.title;
-
-
-  document.getElementById(
-    "songLyrics"
-  ).value =
-    song.lyrics;
-
-
-  document.getElementById(
-    "songListView"
-  ).style.display =
-    "none";
-
-
-  document.getElementById(
-    "editor"
-  ).classList.add(
-    "active"
-  );
-
-}
-
-
-
-/* =====================================================
-   SAVE SONG
-   ===================================================== */
-
-function saveSong() {
-
-
-  const title =
-    document.getElementById(
-      "songTitle"
-    ).value.trim();
-
-
-  const lyrics =
-    document.getElementById(
-      "songLyrics"
-    ).value.trim();
-
-
-  if (!title) {
-
-
-    alert(
-      "Please enter a song title."
-    );
-
-
-    return;
-
-  }
-
-
-  if (!lyrics) {
-
-
-    alert(
-      "Please enter some lyrics."
-    );
-
-
-    return;
-
-  }
-
-
-  if (
-    editingSongId !== null
-  ) {
-
-
-    const song =
-      songs.find(
-        s =>
-          s.id ===
-          editingSongId
+      editButton.addEventListener(
+        "click",
+        () => editSong(song.id)
       );
 
 
-    song.title = title;
+      const deleteButton =
+        document.createElement("button");
 
-    song.lyrics = lyrics;
+      deleteButton.textContent = "Delete";
+
+      deleteButton.className = "secondary";
+
+      deleteButton.addEventListener(
+        "click",
+        () => deleteSong(song.id)
+      );
 
 
-  }
+      item.appendChild(name);
 
-  else {
+      item.appendChild(editButton);
 
+      item.appendChild(deleteButton);
 
-    songs.push({
-
-      id: Date.now(),
-
-      title: title,
-
-      lyrics: lyrics
+      songList.appendChild(item);
 
     });
 
   }
 
 
-  localStorage.setItem(
-
-    "lyricScrollSongs",
-
-    JSON.stringify(songs)
-
-  );
-
-
-  cancelEditor();
-
-
-  displaySongs();
-
-}
-
-
-
-/* =====================================================
-   DELETE SONG
-   ===================================================== */
-
-function deleteSong(id) {
-
-
-  const song =
-    songs.find(
-      s => s.id === id
-    );
-
-
-  if (!song) return;
-
-
-  if (
-    !confirm(
-      `Delete "${song.title}"?`
-    )
-  ) {
-
-
-    return;
-
-  }
-
-
-  songs =
-    songs.filter(
-      s => s.id !== id
-    );
-
-
-  localStorage.setItem(
-
-    "lyricScrollSongs",
-
-    JSON.stringify(songs)
-
-  );
-
-
-  displaySongs();
-
-}
-
-
-
-/* =====================================================
-   CANCEL EDITOR
-   ===================================================== */
-
-function cancelEditor() {
-
-
-  editingSongId = null;
-
-
-  document.getElementById(
-    "editor"
-  ).classList.remove(
-    "active"
-  );
-
-
-  document.getElementById(
-    "songListView"
-  ).style.display =
-    "block";
-
-}
-
-
-
-/* =====================================================
-   OPEN SONG
-   ===================================================== */
-
-let currentSong = null;
-
-
-function openSong(id) {
-
-
-  const song =
-    songs.find(
-      s => s.id === id
-    );
-
-
-  if (!song) return;
-
-
-  stopScrolling();
-
-
-  currentSong = song;
-
-
-  document.getElementById(
-    "songListView"
-  ).style.display =
-    "none";
-
-
-  document.getElementById(
-    "editor"
-  ).classList.remove(
-    "active"
-  );
-
-
-  document.getElementById(
-    "reader"
-  ).classList.add(
-    "active"
-  );
-
-
-  document.getElementById(
-    "readerTitle"
-  ).textContent =
-    song.title;
-
-
-  document.getElementById(
-    "lyrics"
-  ).textContent =
-    song.lyrics;
-
-
-  window.scrollTo(
-    0,
-    0
-  );
-
-}
-
-
-
-/* =====================================================
-   CLOSE READER
-   ===================================================== */
-
-function closeReader() {
-
-
-  stopScrolling();
-
-
-  document.getElementById(
-    "reader"
-  ).classList.remove(
-    "active"
-  );
-
-
-  document.getElementById(
-    "songListView"
-  ).style.display =
-    "block";
-
-}
-
-
-
-/* =====================================================
-   SPEED SYSTEM
-   ===================================================== */
-
-const speeds = {
-
-  0: 0,
-
-  1: 12,
-
-  2: 18,
-
-  3: 25,
-
-  4: 33,
-
-  5: 42,
-
-  6: 53,
-
-  7: 67,
-
-  8: 84,
-
-  9: 105,
-
-  10: 130
-
-};
-
-
-const speedSlider =
-  document.getElementById(
-    "speedSlider"
-  );
-
-
-const speedValue =
-  document.getElementById(
-    "speedValue"
-  );
-
-
-let scrollSpeed = 42;
-
-
-let isScrolling = false;
-
-
-let scrollAnimation = null;
-
-
-let lastTime = null;
-
-
-
-/* =====================================================
-   UPDATE SPEED
-   ===================================================== */
-
-function updateSpeed() {
-
-
-  const level =
-    Number(
-      speedSlider.value
-    );
-
-
-  scrollSpeed =
-    speeds[level];
-
-
-  speedValue.textContent =
-    level === 0
-      ? "STOP"
-      : level;
-
-
-  /*
-     Changing the slider
-     NEVER starts scrolling.
-  */
-
-  if (level === 0) {
+  /* --------------------------------
+     ADD SONG
+  -------------------------------- */
+
+  function addSong() {
 
     stopScrolling();
 
+    editingSongId = null;
+
+    songTitle.value = "";
+
+    songLyrics.value = "";
+
+    editorHeading.textContent =
+      "Add Song";
+
+    showScreen(editorScreen);
+
+    songTitle.focus();
+
   }
 
-}
+
+  /* --------------------------------
+     EDIT SONG
+  -------------------------------- */
+
+  function editSong(id) {
+
+    const song =
+      songs.find(s => s.id === id);
+
+    if (!song) return;
+
+    stopScrolling();
+
+    editingSongId = id;
+
+    songTitle.value = song.title;
+
+    songLyrics.value = song.lyrics;
+
+    editorHeading.textContent =
+      "Edit Song";
+
+    showScreen(editorScreen);
+
+    songTitle.focus();
+
+  }
 
 
+  /* --------------------------------
+     SAVE SONG
+  -------------------------------- */
 
-/* =====================================================
-   SLIDER
-   ===================================================== */
+  function saveSong() {
 
-speedSlider.addEventListener(
-  "input",
-  updateSpeed
-);
+    const title =
+      songTitle.value.trim();
 
-
-
-/* =====================================================
-   SCROLL ANIMATION
-   ===================================================== */
-
-function scrollLyrics(timestamp) {
+    const lyrics =
+      songLyrics.value.trim();
 
 
-  if (!isScrolling) {
+    if (!title) {
+
+      alert("Please enter a song title.");
+
+      return;
+
+    }
+
+
+    if (!lyrics) {
+
+      alert("Please enter some lyrics.");
+
+      return;
+
+    }
+
+
+    if (editingSongId !== null) {
+
+      const song =
+        songs.find(
+          s => s.id === editingSongId
+        );
+
+      if (song) {
+
+        song.title = title;
+
+        song.lyrics = lyrics;
+
+      }
+
+    } else {
+
+      songs.push({
+
+        id: Date.now(),
+
+        title: title,
+
+        lyrics: lyrics,
+
+        // New songs start at speed 5
+        speedLevel: 5
+
+      });
+
+    }
+
+
+    saveSongs();
+
+    renderSongList();
+
+    showScreen(songListScreen);
+
+  }
+
+
+  /* --------------------------------
+     DELETE SONG
+  -------------------------------- */
+
+  function deleteSong(id) {
+
+    const song =
+      songs.find(s => s.id === id);
+
+    if (!song) return;
+
+
+    const confirmed =
+      confirm(
+        `Delete "${song.title}"?`
+      );
+
+    if (!confirmed) return;
+
+
+    songs =
+      songs.filter(
+        s => s.id !== id
+      );
+
+    saveSongs();
+
+    renderSongList();
+
+  }
+
+
+  /* --------------------------------
+     OPEN SONG
+  -------------------------------- */
+
+  function openSong(id) {
+
+    const song =
+      songs.find(s => s.id === id);
+
+    if (!song) return;
+
+
+    stopScrolling();
+
+    currentSong = song;
+
+
+    readerTitle.textContent =
+      song.title;
+
+    lyricsDisplay.textContent =
+      song.lyrics;
+
+
+    /*
+      Load this song's saved speed.
+
+      Old songs that don't have a
+      speedLevel will use speed 5.
+    */
+
+    const savedLevel =
+      Number.isInteger(song.speedLevel)
+        ? song.speedLevel
+        : 5;
+
+
+    speedSlider.value =
+      savedLevel;
+
+
+    updateSpeed(false);
+
+
+    lyricsDisplay.style.fontSize =
+      fontSize + "px";
+
+
+    showScreen(readerScreen);
+
+  }
+
+
+  /* --------------------------------
+     SPEED
+  -------------------------------- */
+
+  function updateSpeed(save = true) {
+
+    const level =
+      Number(speedSlider.value);
+
+
+    scrollSpeed =
+      speeds[level];
+
+
+    speedValue.textContent =
+      level === 0
+        ? "STOP"
+        : level;
+
+
+    /*
+      Save the speed specifically
+      to the current song.
+    */
+
+    if (
+      save &&
+      currentSong
+    ) {
+
+      currentSong.speedLevel =
+        level;
+
+      saveSongs();
+
+    }
+
+
+    /*
+      Speed 0 means stop.
+    */
+
+    if (level === 0) {
+
+      stopScrolling();
+
+    }
+
+  }
+
+
+  /* --------------------------------
+     START / PAUSE SCROLLING
+  -------------------------------- */
+
+  function toggleScrolling() {
+
+    if (isScrolling) {
+
+      stopScrolling();
+
+      return;
+
+    }
+
+
+    /*
+      If speed is STOP,
+      start at speed 5.
+    */
+
+    if (scrollSpeed === 0) {
+
+      speedSlider.value = 5;
+
+      updateSpeed(true);
+
+    }
+
+
+    isScrolling = true;
+
+    lastTime = null;
+
+
+    scrollAnimation =
+      requestAnimationFrame(
+        scrollLyrics
+      );
+
+
+    updateScrollButton();
+
+  }
+
+
+  /* --------------------------------
+     SCROLL ENGINE
+  -------------------------------- */
+
+  function scrollLyrics(timestamp) {
+
+    if (!isScrolling) {
+
+      scrollAnimation = null;
+
+      return;
+
+    }
+
+
+    if (scrollSpeed <= 0) {
+
+      stopScrolling();
+
+      return;
+
+    }
+
+
+    if (lastTime === null) {
+
+      lastTime = timestamp;
+
+    }
+
+
+    const elapsed =
+      timestamp - lastTime;
+
+
+    lastTime = timestamp;
+
+
+    window.scrollBy(
+      0,
+      scrollSpeed *
+      (elapsed / 1000)
+    );
+
+
+    scrollAnimation =
+      requestAnimationFrame(
+        scrollLyrics
+      );
+
+  }
+
+
+  /* --------------------------------
+     STOP SCROLLING
+  -------------------------------- */
+
+  function stopScrolling() {
+
+    isScrolling = false;
+
+
+    if (
+      scrollAnimation !== null
+    ) {
+
+      cancelAnimationFrame(
+        scrollAnimation
+      );
+
+    }
 
 
     scrollAnimation = null;
 
+    lastTime = null;
 
-    return;
+
+    updateScrollButton();
 
   }
 
 
-  if (scrollSpeed <= 0) {
+  /* --------------------------------
+     UPDATE START BUTTON
+  -------------------------------- */
 
+  function updateScrollButton() {
+
+    if (!topScrollButton) return;
+
+
+    topScrollButton.textContent =
+      isScrolling
+        ? "⏸ Pause"
+        : "▶ Start";
+
+  }
+
+
+  /* --------------------------------
+     RESET
+  -------------------------------- */
+
+  function resetScroll() {
 
     stopScrolling();
 
-
-    return;
-
-  }
-
-
-  if (lastTime === null) {
-
-
-    lastTime =
-      timestamp;
-
-  }
-
-
-  const elapsed =
-    timestamp -
-    lastTime;
-
-
-  lastTime =
-    timestamp;
-
-
-  window.scrollBy(
-
-    0,
-
-    scrollSpeed *
-    (elapsed / 1000)
-
-  );
-
-
-  scrollAnimation =
-    requestAnimationFrame(
-      scrollLyrics
-    );
-
-}
-
-
-
-/* =====================================================
-   START / PAUSE
-   ===================================================== */
-
-function toggleScrolling() {
-
-
-  /*
-     If currently scrolling,
-     pause it.
-  */
-
-  if (isScrolling) {
-
-
-    stopScrolling();
-
-
-    return;
-
-  }
-
-
-  /*
-     If speed is STOP and the
-     user deliberately presses
-     Start, use normal speed.
-  */
-
-  if (scrollSpeed === 0) {
-
-
-    speedSlider.value = 5;
-
-
-    updateSpeed();
-
-  }
-
-
-  /*
-     NOW scrolling begins.
-  */
-
-  isScrolling = true;
-
-
-  lastTime = null;
-
-
-  scrollAnimation =
-    requestAnimationFrame(
-      scrollLyrics
-    );
-
-
-  updateScrollButton();
-
-}
-
-
-
-/* =====================================================
-   STOP SCROLLING
-   ===================================================== */
-
-function stopScrolling() {
-
-
-  isScrolling = false;
-
-
-  if (
-    scrollAnimation !== null
-  ) {
-
-
-    cancelAnimationFrame(
-      scrollAnimation
+    window.scrollTo(
+      0,
+      0
     );
 
   }
 
 
-  scrollAnimation = null;
+  /* --------------------------------
+     FONT SIZE
+  -------------------------------- */
+
+  function changeFontSize(amount) {
+
+    fontSize += amount;
 
 
-  lastTime = null;
+    if (fontSize < 14) {
+
+      fontSize = 14;
+
+    }
 
 
-  updateScrollButton();
+    if (fontSize > 60) {
 
-}
+      fontSize = 60;
 
-
-
-/* =====================================================
-   UPDATE TOP BUTTON
-   ===================================================== */
-
-function updateScrollButton() {
+    }
 
 
-  const button =
-    document.getElementById(
-      "topScrollButton"
-    );
-
-
-  if (!button) return;
-
-
-  if (isScrolling) {
-
-
-    button.textContent =
-      "⏸ Pause";
-
-
-  }
-
-  else {
-
-
-    button.textContent =
-      "▶ Start";
-
-  }
-
-}
-
-
-
-/* =====================================================
-   RESET SCROLL
-   ===================================================== */
-
-function resetScroll() {
-
-
-  stopScrolling();
-
-
-  window.scrollTo({
-
-    top: 0,
-
-    behavior: "instant"
-
-  });
-
-}
-
-
-
-/* =====================================================
-   FONT SIZE
-   ===================================================== */
-
-let fontSize = 26;
-
-
-function changeFontSize(amount) {
-
-
-  fontSize += amount;
-
-
-  if (fontSize < 16) {
-
-
-    fontSize = 16;
+    lyricsDisplay.style.fontSize =
+      fontSize + "px";
 
   }
 
 
-  if (fontSize > 60) {
+  /* --------------------------------
+     DARK MODE
+  -------------------------------- */
 
+  function toggleDarkMode() {
 
-    fontSize = 60;
-
-  }
-
-
-  document.getElementById(
-    "lyrics"
-  ).style.fontSize =
-    fontSize + "px";
-
-}
-
-
-
-/* =====================================================
-   DARK MODE
-   ===================================================== */
-
-function toggleDarkMode() {
-
-
-  document.body.classList.toggle(
-    "dark"
-  );
-
-
-  localStorage.setItem(
-
-    "lyricScrollDark",
-
-    document.body.classList.contains(
+    document.body.classList.toggle(
       "dark"
-    )
-
-  );
-
-}
-
-
-
-/* =====================================================
-   RESTORE DARK MODE
-   ===================================================== */
-
-if (
-
-  localStorage.getItem(
-    "lyricScrollDark"
-  ) === "true"
-
-) {
-
-
-  document.body.classList.add(
-    "dark"
-  );
-
-}
-
-
-
-/* =====================================================
-   ESCAPE HTML
-   ===================================================== */
-
-function escapeHTML(text) {
-
-
-  const div =
-    document.createElement(
-      "div"
     );
 
 
-  div.textContent =
-    text;
+    const isDark =
+      document.body.classList.contains(
+        "dark"
+      );
 
 
-  return div.innerHTML;
-
-}
-
-
-
-/* =====================================================
-   START APP
-   ===================================================== */
-
-displaySongs();
+    localStorage.setItem(
+      "lyricScrollDark",
+      isDark
+        ? "true"
+        : "false"
+    );
 
 
-updateSpeed();
+    document.getElementById(
+      "darkModeButton"
+    ).textContent =
+      isDark
+        ? "☀️ Light"
+        : "🌙 Dark";
+
+  }
 
 
-stopScrolling();
+  /* --------------------------------
+     LOAD DARK MODE
+  -------------------------------- */
+
+  function loadDarkMode() {
+
+    const isDark =
+      localStorage.getItem(
+        "lyricScrollDark"
+      ) === "true";
+
+
+    if (isDark) {
+
+      document.body.classList.add(
+        "dark"
+      );
+
+    }
+
+
+    document.getElementById(
+      "darkModeButton"
+    ).textContent =
+      isDark
+        ? "☀️ Light"
+        : "🌙 Dark";
+
+  }
+
+
+  /* --------------------------------
+     BUTTON EVENTS
+  -------------------------------- */
+
+  document
+    .getElementById("addSongButton")
+    .addEventListener(
+      "click",
+      addSong
+    );
+
+
+  document
+    .getElementById("saveSongButton")
+    .addEventListener(
+      "click",
+      saveSong
+    );
+
+
+  document
+    .getElementById("cancelEditButton")
+    .addEventListener(
+      "click",
+      () => {
+
+        showScreen(songListScreen);
+
+      }
+    );
+
+
+  document
+    .getElementById("backToSongsButton")
+    .addEventListener(
+      "click",
+      () => {
+
+        stopScrolling();
+
+        currentSong = null;
+
+        showScreen(songListScreen);
+
+      }
+    );
+
+
+  document
+    .getElementById("resetButton")
+    .addEventListener(
+      "click",
+      resetScroll
+    );
+
+
+  document
+    .getElementById("fontSmallerButton")
+    .addEventListener(
+      "click",
+      () => changeFontSize(-2)
+    );
+
+
+  document
+    .getElementById("fontLargerButton")
+    .addEventListener(
+      "click",
+      () => changeFontSize(2)
+    );
+
+
+  document
+    .getElementById("darkModeButton")
+    .addEventListener(
+      "click",
+      toggleDarkMode
+    );
+
+
+  document
+    .getElementById("topScrollButton")
+    .addEventListener(
+      "click",
+      toggleScrolling
+    );
+
+
+  /*
+    Changing the speed only changes
+    the speed. It does NOT start scrolling.
+  */
+
+  speedSlider.addEventListener(
+    "input",
+    () => updateSpeed(true)
+  );
+
+
+  /* --------------------------------
+     INITIALIZE
+  -------------------------------- */
+
+  loadDarkMode();
+
+  renderSongList();
+
+  updateScrollButton();
 
 </script>
 
-
 </body>
-
 </html>
