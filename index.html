@@ -8,46 +8,595 @@
 <meta name="apple-mobile-web-app-title" content="Lyric Scroll">
 <meta name="theme-color" content="#111111">
 <title>Lyric Scroll</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;background:#111;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-main{max-width:700px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 18px 30px}
-h1{font-size:30px;margin:0 0 14px}textarea{width:100%;min-height:260px;border:1px solid #444;border-radius:14px;background:#1c1c1e;color:#fff;padding:16px;font-size:18px;line-height:1.5;resize:vertical}
-.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
-button{border:0;border-radius:12px;padding:13px 10px;font-size:16px;font-weight:600;background:#2c2c2e;color:#fff}
-button.primary{background:#fff;color:#111}.row{display:flex;gap:12px;align-items:center;margin:12px 0}.row label{min-width:74px}.row input{flex:1}
-#stage{display:none;margin-top:14px;background:#171717;border-radius:14px;padding:18px;max-height:55vh;overflow:hidden}
-#lyrics{font-size:28px;line-height:1.6;white-space:pre-wrap;text-align:center}
-.small{color:#aaa;font-size:13px;text-align:center;margin-top:12px}
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#111;
+  color:#f5f5f5;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+
+main{
+  max-width:700px;
+  margin:auto;
+  padding:calc(18px + env(safe-area-inset-top)) 18px 30px
+}
+
+h1{
+  font-size:30px;
+  margin:0 0 14px
+}
+
+textarea{
+  width:100%;
+  min-height:260px;
+  border:1px solid #444;
+  border-radius:14px;
+  background:#1c1c1e;
+  color:#fff;
+  padding:16px;
+  font-size:18px;
+  line-height:1.5;
+  resize:vertical
+}
+
+.row{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin:12px 0
+}
+
+.row label{
+  min-width:74px
+}
+
+.row input{
+  flex:1
+}
+
+.controls{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:12px 0
+}
+
+button{
+  border:0;
+  border-radius:12px;
+  padding:13px 10px;
+  font-size:16px;
+  font-weight:600;
+  background:#2c2c2e;
+  color:#fff
+}
+
+button.primary{
+  background:#fff;
+  color:#111
+}
+
+/* Editor */
+#editorPanel.hidden{
+  display:none
+}
+
+/* Lyrics area */
+#stage{
+  display:none;
+  margin-top:14px;
+  background:#111;
+  border-radius:14px;
+  height:65vh;
+  min-height:55vh;
+  overflow:hidden;
+  position:relative;
+  padding:18px
+}
+
+#stage.fullscreen{
+  position:fixed;
+  inset:0;
+  z-index:10;
+  margin:0;
+  border-radius:0;
+  width:100%;
+  height:100dvh;
+  min-height:100dvh;
+  padding:
+    calc(18px + env(safe-area-inset-top))
+    18px
+    calc(18px + env(safe-area-inset-bottom));
+  background:#111
+}
+
+#lyrics{
+  font-size:28px;
+  line-height:1.6;
+  white-space:pre-wrap;
+  text-align:center;
+  will-change:transform
+}
+
+/* Performance controls */
+#performanceControls{
+  display:none;
+  position:fixed;
+  left:12px;
+  right:12px;
+  bottom:calc(12px + env(safe-area-inset-bottom));
+  z-index:20;
+  background:rgba(40,40,42,.96);
+  backdrop-filter:blur(12px);
+  border-radius:16px;
+  padding:10px
+}
+
+#performanceControls.visible{
+  display:block
+}
+
+#performanceControls .row{
+  margin:5px 0
+}
+
+#performanceControls button{
+  padding:10px 8px
+}
+
+/* Gear button */
+#controlToggle{
+  display:none;
+  position:fixed;
+  right:14px;
+  top:calc(14px + env(safe-area-inset-top));
+  z-index:21;
+  width:44px;
+  height:44px;
+  padding:0;
+  border-radius:50%;
+  background:rgba(40,40,42,.95)
+}
+
+#stage.fullscreen #controlToggle{
+  display:block
+}
+
+.small{
+  color:#aaa;
+  font-size:13px;
+  text-align:center;
+  margin-top:12px
+}
 </style>
 </head>
+
 <body>
+
 <main>
+
 <h1>🎵 Lyric Scroll</h1>
+
+<div id="editorPanel">
+
 <textarea id="input" placeholder="Paste your lyrics here…"></textarea>
-<div class="row"><label>Speed</label><input id="speed" type="range" min="1" max="10" value="5"><span id="sv">5</span></div>
-<div class="row"><label>Text</label><input id="size" type="range" min="18" max="48" value="28"><span id="zv">28</span></div>
-<div class="controls">
-<button class="primary" id="start">Start</button><button id="pause">Pause</button>
-<button id="reset">Reset</button><button id="clear">Clear</button>
+
+<div class="row">
+  <label>Speed</label>
+  <input
+    id="speed"
+    type="range"
+    min="0.1"
+    max="10"
+    step="0.1"
+    value="2"
+  >
+  <span id="sv">2.0</span>
 </div>
-<div id="stage"><div id="lyrics"></div></div>
-<div class="small">Lyrics are saved on this device.</div>
+
+<div class="row">
+  <label>Text</label>
+  <input
+    id="size"
+    type="range"
+    min="18"
+    max="64"
+    value="28"
+  >
+  <span id="zv">28</span>
+</div>
+
+<div class="controls">
+  <button class="primary" id="start">Start</button>
+  <button id="pause">Pause</button>
+  <button id="reset">Reset</button>
+  <button id="clear">Clear</button>
+  <button id="minimize">Minimize Editor</button>
+</div>
+
+</div>
+
+<div id="stage">
+
+  <button id="controlToggle" aria-label="Show controls">⚙️</button>
+
+  <div id="lyrics"></div>
+
+</div>
+
+<!-- Controls while performing -->
+
+<div id="performanceControls">
+
+  <div class="row">
+    <label>Speed</label>
+    <input
+      id="speedPerformance"
+      type="range"
+      min="0.1"
+      max="10"
+      step="0.1"
+      value="2"
+    >
+    <span id="svPerformance">2.0</span>
+  </div>
+
+  <div class="row">
+    <label>Text</label>
+    <input
+      id="sizePerformance"
+      type="range"
+      min="18"
+      max="64"
+      value="28"
+    >
+    <span id="zvPerformance">28</span>
+  </div>
+
+  <div class="controls">
+    <button class="primary" id="playPerformance">Play</button>
+    <button id="pausePerformance">Pause</button>
+    <button id="resetPerformance">Reset</button>
+    <button id="restore">Edit Lyrics</button>
+  </div>
+
+</div>
+
+<div class="small">
+Lyrics are saved on this device.
+</div>
+
 </main>
+
 <script>
-const input=document.getElementById('input'), lyrics=document.getElementById('lyrics'), stage=document.getElementById('stage');
-const speed=document.getElementById('speed'), size=document.getElementById('size');
-let timer=null, pos=0;
-input.value=localStorage.getItem('lyricScrollLyrics')||'';
-function save(){localStorage.setItem('lyricScrollLyrics',input.value)}
-input.addEventListener('input',save);
-speed.oninput=()=>document.getElementById('sv').textContent=speed.value;
-size.oninput=()=>{document.getElementById('zv').textContent=size.value;lyrics.style.fontSize=size.value+'px'};
-function render(){lyrics.textContent=input.value;stage.style.display='block';lyrics.style.transform=`translateY(${-pos}px)`}
-function stop(){if(timer){clearInterval(timer);timer=null}}
-document.getElementById('start').onclick=()=>{render();stop();timer=setInterval(()=>{pos+=Number(speed.value)*.35;lyrics.style.transform=`translateY(${-pos}px)`},30)}
-document.getElementById('pause').onclick=stop;
-document.getElementById('reset').onclick=()=>{stop();pos=0;render()}
-document.getElementById('clear').onclick=()=>{stop();input.value='';localStorage.removeItem('lyricScrollLyrics');pos=0;stage.style.display='none'}
+
+const input = document.getElementById('input');
+const lyrics = document.getElementById('lyrics');
+const stage = document.getElementById('stage');
+const editorPanel = document.getElementById('editorPanel');
+
+const speed = document.getElementById('speed');
+const size = document.getElementById('size');
+
+const speedPerformance =
+  document.getElementById('speedPerformance');
+
+const sizePerformance =
+  document.getElementById('sizePerformance');
+
+const performanceControls =
+  document.getElementById('performanceControls');
+
+let timer = null;
+let pos = 0;
+let controlsVisible = true;
+
+
+/* Load saved lyrics */
+
+input.value =
+  localStorage.getItem('lyricScrollLyrics') || '';
+
+
+/* Save lyrics automatically */
+
+function save(){
+  localStorage.setItem(
+    'lyricScrollLyrics',
+    input.value
+  );
+}
+
+input.addEventListener('input', save);
+
+
+/* Speed */
+
+function setSpeed(value){
+
+  speed.value = value;
+  speedPerformance.value = value;
+
+  document.getElementById('sv').textContent =
+    Number(value).toFixed(1);
+
+  document.getElementById('svPerformance').textContent =
+    Number(value).toFixed(1);
+}
+
+
+/* Text size */
+
+function setSize(value){
+
+  size.value = value;
+  sizePerformance.value = value;
+
+  document.getElementById('zv').textContent =
+    value;
+
+  document.getElementById('zvPerformance').textContent =
+    value;
+
+  lyrics.style.fontSize =
+    value + 'px';
+}
+
+
+/* Connect sliders */
+
+speed.oninput = () =>
+  setSpeed(speed.value);
+
+speedPerformance.oninput = () =>
+  setSpeed(speedPerformance.value);
+
+size.oninput = () =>
+  setSize(size.value);
+
+sizePerformance.oninput = () =>
+  setSize(sizePerformance.value);
+
+
+/* Display lyrics */
+
+function render(){
+
+  lyrics.textContent = input.value;
+
+  stage.style.display = 'block';
+
+  lyrics.style.transform =
+    `translateY(${-pos}px)`;
+}
+
+
+/* Stop scrolling */
+
+function stop(){
+
+  if(timer){
+    clearInterval(timer);
+    timer = null;
+  }
+}
+
+
+/* Start scrolling */
+
+function startScrolling(){
+
+  render();
+
+  stop();
+
+  timer = setInterval(() => {
+
+    /*
+      Lower number = slower scrolling.
+      0.1 is now extremely slow.
+    */
+
+    pos += Number(speed.value) * 0.35;
+
+    lyrics.style.transform =
+      `translateY(${-pos}px)`;
+
+  },30);
+}
+
+
+/* Enter full-screen performance mode */
+
+function enterPerformanceMode(){
+
+  render();
+
+  editorPanel.classList.add('hidden');
+
+  stage.classList.add('fullscreen');
+
+  performanceControls.classList.add('visible');
+
+  controlsVisible = true;
+}
+
+
+/* Leave performance mode */
+
+function exitPerformanceMode(){
+
+  stage.classList.remove('fullscreen');
+
+  performanceControls.classList.remove('visible');
+
+  editorPanel.classList.remove('hidden');
+}
+
+
+/* START */
+
+document.getElementById('start').onclick = () => {
+
+  startScrolling();
+
+  enterPerformanceMode();
+
+};
+
+
+/* PAUSE */
+
+document.getElementById('pause').onclick = () => {
+
+  stop();
+
+};
+
+
+/* RESET */
+
+document.getElementById('reset').onclick = () => {
+
+  stop();
+
+  pos = 0;
+
+  render();
+
+};
+
+
+/* CLEAR */
+
+document.getElementById('clear').onclick = () => {
+
+  stop();
+
+  input.value = '';
+
+  localStorage.removeItem(
+    'lyricScrollLyrics'
+  );
+
+  pos = 0;
+
+  stage.style.display = 'none';
+
+  exitPerformanceMode();
+
+};
+
+
+/* MINIMIZE EDITOR */
+
+document.getElementById('minimize').onclick = () => {
+
+  enterPerformanceMode();
+
+};
+
+
+/* PERFORMANCE PLAY */
+
+document.getElementById('playPerformance').onclick =
+  () => {
+
+    startScrolling();
+
+  };
+
+
+/* PERFORMANCE PAUSE */
+
+document.getElementById('pausePerformance').onclick =
+  () => {
+
+    stop();
+
+  };
+
+
+/* PERFORMANCE RESET */
+
+document.getElementById('resetPerformance').onclick =
+  () => {
+
+    stop();
+
+    pos = 0;
+
+    render();
+
+  };
+
+
+/* EDIT LYRICS */
+
+document.getElementById('restore').onclick =
+  () => {
+
+    exitPerformanceMode();
+
+    window.scrollTo({
+      top:0,
+      behavior:'smooth'
+    });
+
+  };
+
+
+/* Show/hide performance controls */
+
+document.getElementById('controlToggle').onclick =
+  () => {
+
+    controlsVisible = !controlsVisible;
+
+    performanceControls.classList.toggle(
+      'visible',
+      controlsVisible
+    );
+
+  };
+
+
+/* Tap lyrics to hide/show controls */
+
+stage.addEventListener('click', (e) => {
+
+  if(!stage.classList.contains('fullscreen'))
+    return;
+
+  if(
+    e.target ===
+    document.getElementById('controlToggle')
+  )
+    return;
+
+  controlsVisible = !controlsVisible;
+
+  performanceControls.classList.toggle(
+    'visible',
+    controlsVisible
+  );
+
+});
+
+
+/* Initial settings */
+
+setSpeed(speed.value);
+
+setSize(size.value);
+
 render();
+
 </script>
-</body></html>
+
+</body>
+</html>
