@@ -27,6 +27,10 @@
       overflow-x: hidden;
     }
 
+    /* =============================
+       FIXED HEADER
+    ============================= */
+
     header {
       position: fixed;
       top: 0;
@@ -69,6 +73,10 @@
       padding: 120px 15px 40px;
     }
 
+    /* =============================
+       SONG LIST
+    ============================= */
+
     .song-item {
       display: flex;
       justify-content: space-between;
@@ -92,6 +100,10 @@
       display: flex;
       gap: 6px;
     }
+
+    /* =============================
+       EDITOR
+    ============================= */
 
     .form-group {
       margin-bottom: 15px;
@@ -118,6 +130,10 @@
       resize: vertical;
     }
 
+    /* =============================
+       READER CONTROLS
+    ============================= */
+
     .reader-controls {
       display: flex;
       flex-wrap: wrap;
@@ -140,12 +156,9 @@
       width: 140px;
     }
 
-    /*
-      Reader viewport.
-
-      The lyrics themselves are moved with
-      transform instead of window scrolling.
-    */
+    /* =============================
+       READER VIEWPORT
+    ============================= */
 
     #readerViewport {
       position: relative;
@@ -163,10 +176,6 @@
 
       transform: translate3d(0, 0, 0);
 
-      /*
-        Prevent the browser from trying to
-        interpret touches as gestures on lyrics.
-      */
       touch-action: pan-y;
     }
 
@@ -174,7 +183,9 @@
       display: none;
     }
 
-    /* Dark mode */
+    /* =============================
+       DARK MODE
+    ============================= */
 
     body.dark {
       background: #111111;
@@ -213,6 +224,10 @@
 
 <body>
 
+  <!-- =============================
+       HEADER
+  ============================= -->
+
   <header>
 
     <h1>🎵 Lyric Scroll</h1>
@@ -224,10 +239,25 @@
       </button>
 
       <button
+        id="yourSongsButton"
+        onclick="showSongLibrary()"
+      >
+        🎵 Your Songs
+      </button>
+
+      <button
         id="scrollButton"
         onclick="toggleScrolling()"
       >
         ▶ Start
+      </button>
+
+      <button
+        id="resetButton"
+        onclick="resetScroll()"
+        class="hidden"
+      >
+        ↺ Reset
       </button>
 
       <button
@@ -242,13 +272,17 @@
   </header>
 
 
+  <!-- =============================
+       MAIN
+  ============================= -->
+
   <main>
 
-    <!-- SONG LIST -->
+    <!-- SONG LIBRARY -->
 
     <section id="songListSection">
 
-      <h2>My Songs</h2>
+      <h2>Your Songs</h2>
 
       <div id="songList"></div>
 
@@ -326,17 +360,6 @@
 
       <div class="reader-controls">
 
-        <button
-          onclick="toggleScrolling()"
-          id="readerScrollButton"
-        >
-          ▶ Start
-        </button>
-
-        <button onclick="resetScroll()">
-          ↺ Reset
-        </button>
-
         <button onclick="changeFontSize(-2)">
           A−
         </button>
@@ -373,10 +396,7 @@
       </div>
 
 
-      <!--
-        Lyrics viewport.
-        The lyrics move inside this area.
-      -->
+      <!-- LYRICS -->
 
       <div id="readerViewport">
 
@@ -418,27 +438,11 @@
 
     let lastTime = null;
 
-    /*
-      Current vertical position of
-      the lyrics inside the viewport.
-    */
-
     let lyricPosition = 0;
 
 
     /*
       SPEED SCALE
-
-      1  = 6
-      2  = 12
-      3  = 17
-      4  = 23
-      5  = 30
-      6  = 39
-      7  = 50
-      8  = 62
-      9  = 78
-      10 = 95
     */
 
     const speeds = {
@@ -500,14 +504,11 @@
     const lyricsDisplay =
       document.getElementById("lyricsDisplay");
 
-    const readerViewport =
-      document.getElementById("readerViewport");
-
     const scrollButton =
       document.getElementById("scrollButton");
 
-    const readerScrollButton =
-      document.getElementById("readerScrollButton");
+    const resetButton =
+      document.getElementById("resetButton");
 
     const speedSlider =
       document.getElementById("speedSlider");
@@ -526,6 +527,41 @@
         "lyricScrollSongs",
         JSON.stringify(songs)
       );
+
+    }
+
+
+    /* =============================
+       SHOW SONG LIBRARY
+    ============================= */
+
+    function showSongLibrary() {
+
+      stopScrolling();
+
+      currentSong = null;
+
+      readerSection.classList.add(
+        "hidden"
+      );
+
+      editorSection.classList.add(
+        "hidden"
+      );
+
+      songListSection.classList.remove(
+        "hidden"
+      );
+
+      resetButton.classList.add(
+        "hidden"
+      );
+
+      scrollButton.classList.remove(
+        "hidden"
+      );
+
+      window.scrollTo(0, 0);
 
     }
 
@@ -659,6 +695,15 @@
       );
 
 
+      resetButton.classList.add(
+        "hidden"
+      );
+
+      scrollButton.classList.remove(
+        "hidden"
+      );
+
+
       window.scrollTo(0, 0);
 
     }
@@ -701,6 +746,15 @@
       );
 
       editorSection.classList.remove(
+        "hidden"
+      );
+
+
+      resetButton.classList.add(
+        "hidden"
+      );
+
+      scrollButton.classList.remove(
         "hidden"
       );
 
@@ -798,6 +852,15 @@
       );
 
 
+      resetButton.classList.add(
+        "hidden"
+      );
+
+      scrollButton.classList.remove(
+        "hidden"
+      );
+
+
       window.scrollTo(0, 0);
 
     }
@@ -880,19 +943,12 @@
         song.lyrics;
 
 
-      /*
-        Start the lyrics at the top.
-      */
-
       lyricPosition = 0;
+
 
       lyricsDisplay.style.transform =
         "translate3d(0, 0, 0)";
 
-
-      /*
-        Load saved speed.
-      */
 
       const savedLevel =
         Number.isInteger(
@@ -918,6 +974,21 @@
       );
 
       readerSection.classList.remove(
+        "hidden"
+      );
+
+
+      /*
+        Show Reset only while
+        inside the reader.
+      */
+
+      resetButton.classList.remove(
+        "hidden"
+      );
+
+
+      scrollButton.classList.remove(
         "hidden"
       );
 
@@ -967,10 +1038,6 @@
       speedValue.textContent =
         level;
 
-
-      /*
-        Save speed to current song.
-      */
 
       if (
         save &&
@@ -1057,9 +1124,7 @@
 
 
       /*
-        Move using fractional pixels.
-
-        This is deliberately NOT rounded.
+        Smooth fractional movement.
       */
 
       lyricPosition -=
@@ -1072,9 +1137,8 @@
 
 
       /*
-        Stop automatically once the
-        lyrics have completely passed
-        through the viewport.
+        Stop when the lyrics
+        have completely passed.
       */
 
       const lyricsBottom =
@@ -1084,8 +1148,7 @@
 
 
       if (
-        lyricsBottom <
-        0
+        lyricsBottom < 0
       ) {
 
         stopScrolling();
@@ -1136,7 +1199,7 @@
 
 
     /* =============================
-       UPDATE BUTTON TEXT
+       UPDATE BUTTON
     ============================= */
 
     function updateScrollButton() {
@@ -1150,15 +1213,11 @@
       scrollButton.textContent =
         text;
 
-
-      readerScrollButton.textContent =
-        text;
-
     }
 
 
     /* =============================
-       RESET SCROLL
+       RESET
     ============================= */
 
     function resetScroll() {
@@ -1291,12 +1350,11 @@
     }
 
 
-    updateDarkButton();
-
-
     /* =============================
        INITIALIZE
     ============================= */
+
+    updateDarkButton();
 
     renderSongs();
 
