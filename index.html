@@ -90,6 +90,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
     padding: 14px;
     border-radius: 12px;
     background: white;
@@ -102,8 +103,10 @@
   }
 
   .song-name {
+    flex: 1;
     font-size: 18px;
     font-weight: 600;
+    cursor: pointer;
   }
 
   .song-actions {
@@ -165,7 +168,7 @@
     white-space: pre-wrap;
     line-height: 1.65;
     font-size: 26px;
-    padding: 25px 10px 500px;
+    padding: 25px 10px 600px;
   }
 
   .reader-title {
@@ -233,49 +236,75 @@
   <h1>🎵 Lyric Scroll</h1>
 
   <div class="controls">
-    <button class="primary" onclick="showEditor()">
+
+    <button
+      class="primary"
+      onclick="showEditor()">
       + Add Song
     </button>
 
-    <button class="secondary" onclick="toggleDarkMode()">
+    <button
+      class="secondary"
+      onclick="toggleDarkMode()">
       Dark Mode
     </button>
+
   </div>
 </header>
+
 
 <main>
 
   <!-- SONG LIST -->
+
   <section id="songListView">
 
     <h2>My Songs</h2>
 
-    <div id="songList" class="song-list"></div>
+    <div
+      id="songList"
+      class="song-list">
+    </div>
 
   </section>
 
 
   <!-- EDITOR -->
-  <section id="editor" class="editor">
 
-    <h2 id="editorHeading">Add Song</h2>
+  <section
+    id="editor"
+    class="editor">
+
+    <h2 id="editorHeading">
+      Add Song
+    </h2>
 
     <div class="field">
-      <label for="songTitle">Song Title</label>
+
+      <label for="songTitle">
+        Song Title
+      </label>
 
       <input
         id="songTitle"
         type="text"
         placeholder="Song title">
+
     </div>
 
+
     <div class="field">
-      <label for="songLyrics">Lyrics</label>
+
+      <label for="songLyrics">
+        Lyrics
+      </label>
 
       <textarea
         id="songLyrics"
         placeholder="Paste or type your lyrics here..."></textarea>
+
     </div>
+
 
     <div class="controls">
 
@@ -297,7 +326,10 @@
 
 
   <!-- READER -->
-  <section id="reader" class="reader">
+
+  <section
+    id="reader"
+    class="reader">
 
     <div class="reader-controls">
 
@@ -307,6 +339,7 @@
         ← Songs
       </button>
 
+
       <button
         class="primary"
         onclick="toggleScrolling()"
@@ -314,11 +347,13 @@
         ▶ Start
       </button>
 
+
       <button
         class="secondary"
         onclick="resetScroll()">
         ↺ Reset
       </button>
+
 
       <div class="font-size">
 
@@ -327,6 +362,7 @@
           onclick="changeFontSize(-2)">
           A−
         </button>
+
 
         <button
           class="secondary"
@@ -339,17 +375,22 @@
     </div>
 
 
+    <!-- SPEED CONTROL -->
+
     <div class="speed-control">
 
       <div class="speed-header">
 
-        <span>Scroll Speed</span>
+        <span>
+          Scroll Speed
+        </span>
 
         <strong id="speedValue">
           5
         </strong>
 
       </div>
+
 
       <input
         type="range"
@@ -359,9 +400,17 @@
         value="5"
         step="1">
 
+
       <div class="speed-labels">
-        <span>STOP</span>
-        <span>FAST</span>
+
+        <span>
+          STOP
+        </span>
+
+        <span>
+          FAST
+        </span>
+
       </div>
 
     </div>
@@ -371,6 +420,7 @@
       id="readerTitle"
       class="reader-title">
     </div>
+
 
     <div
       id="lyrics"
@@ -401,34 +451,42 @@ let editingSongId = null;
 
 function displaySongs() {
 
-  const list = document.getElementById("songList");
+  const list =
+    document.getElementById("songList");
 
   list.innerHTML = "";
+
 
   if (songs.length === 0) {
 
     list.innerHTML = `
       <div class="empty">
         No songs yet.<br>
-        Tap <strong>+ Add Song</strong> to get started.
+        Tap <strong>+ Add Song</strong>
+        to get started.
       </div>
     `;
 
     return;
   }
 
+
   songs.forEach(song => {
 
-    const item = document.createElement("div");
+    const item =
+      document.createElement("div");
 
     item.className = "song-item";
+
 
     item.innerHTML = `
 
       <div
         class="song-name"
         onclick="openSong(${song.id})">
+
         ${escapeHTML(song.title)}
+
       </div>
 
       <div class="song-actions">
@@ -446,7 +504,9 @@ function displaySongs() {
         </button>
 
       </div>
+
     `;
+
 
     list.appendChild(item);
 
@@ -462,23 +522,35 @@ function showEditor() {
 
   editingSongId = null;
 
-  document.getElementById("editorHeading")
-    .textContent = "Add Song";
 
-  document.getElementById("songTitle")
-    .value = "";
+  document.getElementById(
+    "editorHeading"
+  ).textContent = "Add Song";
 
-  document.getElementById("songLyrics")
-    .value = "";
 
-  document.getElementById("songListView")
-    .style.display = "none";
+  document.getElementById(
+    "songTitle"
+  ).value = "";
 
-  document.getElementById("reader")
-    .classList.remove("active");
 
-  document.getElementById("editor")
-    .classList.add("active");
+  document.getElementById(
+    "songLyrics"
+  ).value = "";
+
+
+  document.getElementById(
+    "songListView"
+  ).style.display = "none";
+
+
+  document.getElementById(
+    "reader"
+  ).classList.remove("active");
+
+
+  document.getElementById(
+    "editor"
+  ).classList.add("active");
 }
 
 
@@ -488,26 +560,38 @@ function showEditor() {
 
 function editSong(id) {
 
-  const song = songs.find(s => s.id === id);
+  const song =
+    songs.find(s => s.id === id);
 
   if (!song) return;
 
+
   editingSongId = id;
 
-  document.getElementById("editorHeading")
-    .textContent = "Edit Song";
 
-  document.getElementById("songTitle")
-    .value = song.title;
+  document.getElementById(
+    "editorHeading"
+  ).textContent = "Edit Song";
 
-  document.getElementById("songLyrics")
-    .value = song.lyrics;
 
-  document.getElementById("songListView")
-    .style.display = "none";
+  document.getElementById(
+    "songTitle"
+  ).value = song.title;
 
-  document.getElementById("editor")
-    .classList.add("active");
+
+  document.getElementById(
+    "songLyrics"
+  ).value = song.lyrics;
+
+
+  document.getElementById(
+    "songListView"
+  ).style.display = "none";
+
+
+  document.getElementById(
+    "editor"
+  ).classList.add("active");
 }
 
 
@@ -518,23 +602,32 @@ function editSong(id) {
 function saveSong() {
 
   const title =
-    document.getElementById("songTitle")
-      .value.trim();
+    document.getElementById(
+      "songTitle"
+    ).value.trim();
+
 
   const lyrics =
-    document.getElementById("songLyrics")
-      .value.trim();
+    document.getElementById(
+      "songLyrics"
+    ).value.trim();
+
 
   if (!title) {
 
-    alert("Please enter a song title.");
+    alert(
+      "Please enter a song title."
+    );
 
     return;
   }
 
+
   if (!lyrics) {
 
-    alert("Please enter some lyrics.");
+    alert(
+      "Please enter some lyrics."
+    );
 
     return;
   }
@@ -543,7 +636,10 @@ function saveSong() {
   if (editingSongId !== null) {
 
     const song =
-      songs.find(s => s.id === editingSongId);
+      songs.find(
+        s => s.id === editingSongId
+      );
+
 
     song.title = title;
     song.lyrics = lyrics;
@@ -582,20 +678,26 @@ function saveSong() {
 function deleteSong(id) {
 
   const song =
-    songs.find(s => s.id === id);
+    songs.find(
+      s => s.id === id
+    );
 
   if (!song) return;
+
 
   const confirmed =
     confirm(
       `Delete "${song.title}"?`
     );
 
+
   if (!confirmed) return;
 
 
   songs =
-    songs.filter(s => s.id !== id);
+    songs.filter(
+      s => s.id !== id
+    );
 
 
   localStorage.setItem(
@@ -616,11 +718,15 @@ function cancelEditor() {
 
   editingSongId = null;
 
-  document.getElementById("editor")
-    .classList.remove("active");
 
-  document.getElementById("songListView")
-    .style.display = "block";
+  document.getElementById(
+    "editor"
+  ).classList.remove("active");
+
+
+  document.getElementById(
+    "songListView"
+  ).style.display = "block";
 }
 
 
@@ -630,32 +736,47 @@ function cancelEditor() {
 
 let currentSong = null;
 
+
 function openSong(id) {
 
   const song =
-    songs.find(s => s.id === id);
+    songs.find(
+      s => s.id === id
+    );
+
 
   if (!song) return;
 
+
   currentSong = song;
 
-  document.getElementById("songListView")
-    .style.display = "none";
 
-  document.getElementById("editor")
-    .classList.remove("active");
+  document.getElementById(
+    "songListView"
+  ).style.display = "none";
 
-  document.getElementById("reader")
-    .classList.add("active");
 
-  document.getElementById("readerTitle")
-    .textContent = song.title;
+  document.getElementById(
+    "editor"
+  ).classList.remove("active");
 
-  document.getElementById("lyrics")
-    .textContent = song.lyrics;
+
+  document.getElementById(
+    "reader"
+  ).classList.add("active");
+
+
+  document.getElementById(
+    "readerTitle"
+  ).textContent = song.title;
+
+
+  document.getElementById(
+    "lyrics"
+  ).textContent = song.lyrics;
+
 
   resetScroll();
-
 }
 
 
@@ -667,17 +788,35 @@ function closeReader() {
 
   stopScrolling();
 
-  document.getElementById("reader")
-    .classList.remove("active");
 
-  document.getElementById("songListView")
-    .style.display = "block";
+  document.getElementById(
+    "reader"
+  ).classList.remove("active");
+
+
+  document.getElementById(
+    "songListView"
+  ).style.display = "block";
 }
 
 
 /* =========================================================
    SCROLL SPEED
    ========================================================= */
+
+/*
+   0  = stopped
+   1  = very slow
+   2  = slow
+   3  = gentle
+   4  = moderate
+   5  = normal
+   6  = moderately fast
+   7  = fast
+   8  = very fast
+   9  = really fast
+   10 = maximum
+*/
 
 const speeds = {
 
@@ -707,10 +846,15 @@ const speeds = {
 
 
 const speedSlider =
-  document.getElementById("speedSlider");
+  document.getElementById(
+    "speedSlider"
+  );
+
 
 const speedValue =
-  document.getElementById("speedValue");
+  document.getElementById(
+    "speedValue"
+  );
 
 
 let scrollSpeed = 42;
@@ -724,10 +868,22 @@ let lastTime = null;
    UPDATE SPEED
    ========================================================= */
 
+/*
+   IMPORTANT:
+
+   Changing the speed DOES NOT
+   start scrolling.
+
+   It only changes the speed
+   that will be used when Start
+   is pressed.
+*/
+
 function updateSpeed() {
 
   const level =
     Number(speedSlider.value);
+
 
   scrollSpeed =
     speeds[level];
@@ -738,26 +894,10 @@ function updateSpeed() {
       ? "STOP"
       : level;
 
-
-  if (scrollSpeed > 0) {
-
-    if (!scrollAnimation) {
-
-      lastTime = null;
-
-      scrollAnimation =
-        requestAnimationFrame(
-          scrollLyrics
-        );
-    }
-
-  } else {
-
-    stopScrolling();
-
-  }
 }
 
+
+/* Listen for slider changes */
 
 speedSlider.addEventListener(
   "input",
@@ -788,6 +928,7 @@ function scrollLyrics(timestamp) {
   const elapsed =
     timestamp - lastTime;
 
+
   lastTime = timestamp;
 
 
@@ -796,7 +937,7 @@ function scrollLyrics(timestamp) {
     0,
 
     scrollSpeed *
-      (elapsed / 1000)
+    (elapsed / 1000)
 
   );
 
@@ -809,39 +950,61 @@ function scrollLyrics(timestamp) {
 
 
 /* =========================================================
-   START / STOP
+   START / PAUSE
    ========================================================= */
 
 function toggleScrolling() {
+
+  /*
+     If currently scrolling,
+     pause it.
+  */
 
   if (scrollAnimation) {
 
     stopScrolling();
 
-  } else {
-
-    if (scrollSpeed === 0) {
-
-      speedSlider.value = 5;
-
-      updateSpeed();
-
-    } else {
-
-      lastTime = null;
-
-      scrollAnimation =
-        requestAnimationFrame(
-          scrollLyrics
-        );
-
-      document.getElementById(
-        "scrollButton"
-      ).textContent = "⏸ Pause";
-    }
+    return;
   }
+
+
+  /*
+     If speed is STOP,
+     automatically choose level 5
+     when the user presses Start.
+  */
+
+  if (scrollSpeed === 0) {
+
+    speedSlider.value = 5;
+
+    updateSpeed();
+  }
+
+
+  /*
+     NOW we actually start scrolling.
+  */
+
+  lastTime = null;
+
+
+  scrollAnimation =
+    requestAnimationFrame(
+      scrollLyrics
+    );
+
+
+  document.getElementById(
+    "scrollButton"
+  ).textContent =
+    "⏸ Pause";
 }
 
+
+/* =========================================================
+   STOP SCROLLING
+   ========================================================= */
 
 function stopScrolling() {
 
@@ -860,7 +1023,8 @@ function stopScrolling() {
 
   document.getElementById(
     "scrollButton"
-  ).textContent = "▶ Start";
+  ).textContent =
+    "▶ Start";
 }
 
 
@@ -871,6 +1035,7 @@ function stopScrolling() {
 function resetScroll() {
 
   stopScrolling();
+
 
   window.scrollTo({
 
@@ -894,12 +1059,16 @@ function changeFontSize(amount) {
   fontSize += amount;
 
 
-  if (fontSize < 16)
+  if (fontSize < 16) {
+
     fontSize = 16;
+  }
 
 
-  if (fontSize > 60)
+  if (fontSize > 60) {
+
     fontSize = 60;
+  }
 
 
   document.getElementById(
@@ -915,7 +1084,10 @@ function changeFontSize(amount) {
 
 function toggleDarkMode() {
 
-  document.body.classList.toggle("dark");
+  document.body.classList.toggle(
+    "dark"
+  );
+
 
   localStorage.setItem(
 
@@ -929,26 +1101,34 @@ function toggleDarkMode() {
 }
 
 
+/* Restore dark mode */
+
 if (
   localStorage.getItem(
     "lyricScrollDark"
   ) === "true"
 ) {
 
-  document.body.classList.add("dark");
+  document.body.classList.add(
+    "dark"
+  );
 }
 
 
 /* =========================================================
-   SECURITY / TEXT DISPLAY
+   TEXT SAFETY
    ========================================================= */
 
 function escapeHTML(text) {
 
   const div =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   div.textContent = text;
+
 
   return div.innerHTML;
 }
@@ -959,6 +1139,14 @@ function escapeHTML(text) {
    ========================================================= */
 
 displaySongs();
+
+
+/*
+   Set initial speed display
+   WITHOUT starting scrolling.
+*/
+
+updateSpeed();
 
 </script>
 
